@@ -1,11 +1,11 @@
-import { createAlertDialog } from '@/components/message/index'
+import { createMessageDialog } from '@/components/message/index'
 //import { createAlertDialogEle } from '@/components/message/indexEle'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { createApp } from 'vue' /*从Vue库中导入了createApp */
 import App from './App.vue' /* ./ 当前位置*/ /*导入了名为App.vue的组件文件，这是Vue应用的根组件 */
 import router from './router'
 //import.meta.env.DEV && (await import('@/mock/index'))
-import('@/mock/index')
+//import('@/mock/index')
 
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -24,6 +24,6 @@ app.config.errorHandler = (err) => {
   console.error(message)
   // createAlertDialogEle(message)
   // console.log('APPdialog1')
-  createAlertDialog(message)
+  createMessageDialog(message)
   console.log('APPdialog2')
 }

@@ -1,3 +1,5 @@
-export const USER = 'As2F'
-export const ADMIN = 'Pgku'
-export const DEFUlT = 'cwq3'
+export const STUDENT = 'qpCf'
+export const TEACHER = 'kU4T'
+export const ADMIN = 'QPZM'
+export const PA_TUTOR = 'AsImV'
+export const PA_REVIEW = 'zg0NS'

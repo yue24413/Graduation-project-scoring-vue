@@ -28,8 +28,8 @@ body {
 }
 
 #app {
-  max-width: 960px;
-  background: indigo;
+  max-width: 100%;
+  /* background: #fafafc; */
   min-height: 100vh;
   border-radius: 4px;
   margin: 0 auto;

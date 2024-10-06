@@ -1,5 +1,6 @@
 import { createMessageDialog } from '@/components/message/index'
 import { CommonService } from '@/services'
+import * as consty from '@/services/Const'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 const routes: RouteRecordRaw[] = [
   {
@@ -9,11 +10,37 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/',
-    name: 'home',
-    // route level code-splitting
-    // this generates a separate chunk (About.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import('@/views/login/IndexView.vue')
+    component: () => import('@/views/main/IndexView.vue'),
+    meta: {
+      roles: [consty.STUDENT, consty.TEACHER, consty.ADMIN]
+    },
+    children: [
+      {
+        path: 'student',
+        component: () => import('@/views/main/student/IndexView.vue'),
+        meta: {
+          roles: [consty.STUDENT]
+        }
+      },
+      {
+        path: 'teacher',
+        component: () => import('@/views/main/teacher/IndexView.vue'),
+        meta: {
+          roles: [consty.TEACHER]
+        }
+      },
+      {
+        path: 'admin',
+        component: () => import('@/views/main/admin/IndexView.vue'),
+        meta: {
+          roles: [consty.ADMIN]
+        }
+      }
+    ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/login'
   }
 ]
 const router = createRouter({
