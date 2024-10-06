@@ -4,10 +4,21 @@
     <div class="content">
       <div class="login-card">
         <form @submit.prevent="handleLogin">
-          <label for="username">Username:</label>
-          <input type="text" id="username" v-model="username" required />
-          <label for="password">Password:</label>
-          <input type="password" id="password" v-model="password" required />
+          <label></label>
+          <input
+            type="text"
+            id="username"
+            v-model="username"
+            required
+            placeholder="请输入学号/工号:" />
+          <label></label>
+          <input
+            placeholder="请输入密码："
+            type="password"
+            id="password"
+            v-model="password"
+            required
+            :prefix-icon="LockIcon" />
           <button type="submit">Login</button>
         </form>
       </div>
@@ -20,7 +31,7 @@
 
 <script setup>
 import { onMounted, ref, computed, watchEffect, reactive } from 'vue'
-
+import { Lock as LockIcon, User as UserIcon } from '@element-plus/icons-vue'
 const props = defineProps({
   title: {
     type: String,
@@ -126,7 +137,7 @@ watchEffect(() => {
 .title {
   font-size: 60px;
 
-  margin-top: 100px;
+  margin-top: 80px;
   z-index: 1; /* 确保标题在星星背景之上 */
 }
 
@@ -145,35 +156,39 @@ watchEffect(() => {
   top: -50px;
   background-color: rgba(255, 255, 255, 0.1); /* 半透明背景 */
   padding: 80px 50px;
-  border: 3px solid linear-gradient(to right, #ff7f50, #ff6347, #ff4500); /* 渐变边框 */
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
   z-index: 2; /* 确保登录卡片在星星背景之上 */
 }
-
-.login-card h2 {
-  margin-bottom: 20px;
-}
-
 .login-card label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .login-card input {
-  margin-bottom: 10px;
-  padding: 5px;
+  margin-bottom: 15px;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0);
   width: calc(100% - 10px);
+  color: white;
+  font-size: 1rem;
+}
+.login-card input:focus {
+  border-bottom: 1px solid #007bff;
+  outline: none;
 }
 
 .login-card button {
-  padding: 8px 16px;
+  margin-top: 10px;
+  padding: 10px 20px;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 1rem;
 }
 
 .login-card button:hover {
@@ -196,5 +211,10 @@ watchEffect(() => {
   height: 2px;
   background-color: white;
   border-radius: 50%;
+}
+@media (max-width: 1024px) {
+  h1 {
+    display: none;
+  }
 }
 </style>
