@@ -44,7 +44,7 @@ const logoutF = () => {
 }
 
 .my-row {
-  background-color: rgba(22, 22, 23, 0.8);
+  background-color: rgba(120, 120, 120, 0.8);
   color: #ffffff;
 }
 </style>
