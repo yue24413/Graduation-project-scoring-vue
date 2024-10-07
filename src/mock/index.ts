@@ -1,3 +1,4 @@
+/*
 import * as consty from '@/services/Const'
 import type { ResultVO } from '@/type/index'
 import { createServer, Response } from 'miragejs'
@@ -36,6 +37,7 @@ server.post('login', (_schema, request) => {
   resultVO.message = '用户名密码错误'
   return resultVO
 })
+*/
 
 // server.get('library', (_schema, request) => {
 //   const resultVO: ResultVO<{}> = { code: 200, data: {} }

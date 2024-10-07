@@ -1,14 +1,15 @@
 <template>
   <div class="container">
-    <h1 class="title">{{ title }}</h1>
     <div class="content">
       <div class="login-card">
-        <form @submit.prevent="handleLogin">
+        <form @submit.prevent="onLogin">
+          <h2 class="title">login</h2>
+
           <label></label>
           <input
             type="text"
-            id="username"
-            v-model="username"
+            id="number"
+            v-model="userR.number"
             required
             placeholder="请输入学号/工号:" />
           <label></label>
@@ -16,9 +17,8 @@
             placeholder="请输入密码："
             type="password"
             id="password"
-            v-model="password"
-            required
-            :prefix-icon="LockIcon" />
+            v-model="userR.password"
+            required />
           <button type="submit">Login</button>
         </form>
       </div>
@@ -30,19 +30,22 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, watchEffect, reactive } from 'vue'
-import { Lock as LockIcon, User as UserIcon } from '@element-plus/icons-vue'
-const props = defineProps({
-  title: {
-    type: String,
-    default: 'login'
-  }
-})
-
+import { CommonService } from '@/services/index'
+import { computed, onMounted, ref, watchEffect } from 'vue'
 const starsContainer = ref(null)
 const stars = ref([])
-const state = reactive({ username: '', password: '' })
+const userR = ref({ number: '', password: '' })
 
+// 处理登录逻辑
+const onLogin = async () => {
+  const user = {
+    number: userR.value.number,
+    password: userR.value.password
+  }
+  await CommonService.loginService(user)
+  userR.value.number = ''
+  userR.value.password = ''
+}
 const getContainerSize = () => ({
   width: starsContainer.value?.clientWidth || 0,
   height: starsContainer.value?.clientHeight || 0
@@ -51,7 +54,7 @@ const getContainerSize = () => ({
 const containerSize = computed(() => getContainerSize())
 
 const createStars = () => {
-  const numStars = 100
+  const numStars = 150
   for (let i = 0; i < numStars; i++) {
     const star = {
       position: {
@@ -70,11 +73,9 @@ const createStars = () => {
 
 const animateStars = () => {
   if (!starsContainer.value) return
-
   stars.value.forEach((star) => {
     star.position.x += star.direction.x
     star.position.y += star.direction.y
-
     // 反弹或重新定位星星
     if (star.position.x < 0 || star.position.x > containerSize.value.width) {
       star.direction.x *= -1
@@ -82,10 +83,8 @@ const animateStars = () => {
     if (star.position.y < 0 || star.position.y > containerSize.value.height) {
       star.direction.y *= -1
     }
-
     // 闪烁效果
     star.opacity = Math.random() > 0.9 ? 0 : 1
-
     // 更新星星的样式
     star.style = {
       left: `${star.position.x}px`,
@@ -95,12 +94,6 @@ const animateStars = () => {
   })
 
   requestAnimationFrame(animateStars)
-}
-
-const handleLogin = () => {
-  // 处理登录逻辑
-  console.log('Username:', state.username)
-  console.log('Password:', state.password)
 }
 
 onMounted(() => {
@@ -135,9 +128,8 @@ watchEffect(() => {
 }
 
 .title {
-  font-size: 60px;
-
-  margin-top: 80px;
+  font-size: 40px;
+  margin-bottom: 80px;
   z-index: 1; /* 确保标题在星星背景之上 */
 }
 
@@ -153,12 +145,12 @@ watchEffect(() => {
 
 .login-card {
   position: relative;
-  top: -50px;
+
   background-color: rgba(255, 255, 255, 0.1); /* 半透明背景 */
   padding: 80px 50px;
   border-radius: 8px;
   text-align: center;
-  z-index: 2; /* 确保登录卡片在星星背景之上 */
+  z-index: 1; /* 确保登录卡片在星星背景之上 */
 }
 .login-card label {
   display: block;
@@ -213,8 +205,5 @@ watchEffect(() => {
   border-radius: 50%;
 }
 @media (max-width: 1024px) {
-  h1 {
-    display: none;
-  }
 }
 </style>

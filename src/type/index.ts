@@ -1,11 +1,16 @@
 export interface User {
   id?: string
-  role?: string
-  account?: string
-  password?: string
   name?: string
-  address?: string
+  number?: string
+  password?: string
+  student?: string
+  teacher?: string
+  description?: string
+  departmentId?: string
+  role?: string
+  groupNumber?: string
   insertTime?: string
+  updateTime?: string
 }
 export interface ResultVO<T> {
   code: number

@@ -62,7 +62,7 @@ router.beforeEach((to, from) => {
     return true
   } else {
     createMessageDialog('无权限')
-    return { name: 'home' }
+    return { name: 'login' }
   }
 })
 

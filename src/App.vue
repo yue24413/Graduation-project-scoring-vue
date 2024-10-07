@@ -29,11 +29,11 @@ body {
 
 #app {
   max-width: 100%;
-  background: #fafafc;
+  background: #ccf0ff;
   min-height: 100vh;
   border-radius: 4px;
   margin: 0 auto;
-  padding: 15px;
+  /* padding: 15px; */
   overflow: overlay;
 }
 
