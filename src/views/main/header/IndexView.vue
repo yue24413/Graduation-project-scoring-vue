@@ -3,7 +3,6 @@ import router from '@/router'
 import { CommonService } from '@/services'
 import { ADMIN, STUDENT, TEACHER } from '@/services/Const'
 import { useUserStore } from '@/store/UserStore'
-import { SwitchButton } from '@element-plus/icons-vue'
 import { defineAsyncComponent, type Component } from 'vue'
 const userS = useUserStore().userS
 const role = CommonService.getRole()
@@ -30,12 +29,13 @@ const logoutF = () => {
     <el-col :span="14">
       <component :is="nemuComponent" />
     </el-col>
+    <el-col :span="2"></el-col>
     <el-col :span="2">
-      <el-icon id="logout" :size="32" color="red" @click="logoutF">
-        <SwitchButton />
+      <el-icon id="logout" :size="30" color="blue" @click="logoutF">
+        <el-icon><SwitchButton /></el-icon>
       </el-icon>
     </el-col>
-    <el-col :span="4"></el-col>
+    <el-col :span="2"></el-col>
   </el-row>
 </template>
 <style scoped>
@@ -44,7 +44,7 @@ const logoutF = () => {
 }
 
 .my-row {
-  background-color: rgba(120, 120, 120, 0.8);
+  background-color: #f5f5f5;
   color: #ffffff;
 }
 </style>

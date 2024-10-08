@@ -1,4 +1,6 @@
 <script setup lang="ts"></script>
 <template>
-  <div>teacher</div>
+  <RouterView v-slot="{ Component }">
+    <component :is="Component" />
+  </RouterView>
 </template>

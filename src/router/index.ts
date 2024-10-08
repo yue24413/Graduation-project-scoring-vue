@@ -27,7 +27,13 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/main/teacher/IndexView.vue'),
         meta: {
           roles: [consty.TEACHER]
-        }
+        },
+        children: [
+          {
+            path: '',
+            component: () => import('@/views/main/teacher/TutorStudentsView.vue')
+          }
+        ]
       },
       {
         path: 'admin',

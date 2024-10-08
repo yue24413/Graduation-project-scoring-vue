@@ -29,7 +29,7 @@ body {
 
 #app {
   max-width: 100%;
-  background: #ccf0ff;
+  background: #f5f5f5;
   min-height: 100vh;
   border-radius: 4px;
   margin: 0 auto;
