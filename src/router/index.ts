@@ -1,4 +1,3 @@
-import { createMessageDialog } from '@/components/message/index'
 import { CommonService } from '@/services'
 import * as consty from '@/services/Const'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
@@ -67,7 +66,6 @@ router.beforeEach((to, from) => {
   if (Array.isArray(roles) && roles.includes(userRole)) {
     return true
   } else {
-    createMessageDialog('无权限')
     return { name: 'login' }
   }
 })

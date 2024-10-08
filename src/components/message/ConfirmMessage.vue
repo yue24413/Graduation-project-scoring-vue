@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { ElDialog } from 'element-plus'
 import { ref, render } from 'vue'
-
 const dialogVisible = ref(true)
 
 const props = defineProps<{ message: string; close: Function }>()
