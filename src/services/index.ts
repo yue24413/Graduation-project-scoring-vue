@@ -2,7 +2,7 @@ import { createNoticeBoard } from '@/components/Notice/index'
 import { useGet, usePost } from '@/fetch'
 import router from '@/router'
 import * as consty from '@/services/Const'
-import type { Process, ResultVO, User } from '@/type/index'
+import type { Process, User } from '@/type/index'
 export class CommonService {
   static refreshPage = async () => {
     setTimeout(() => {
@@ -39,7 +39,8 @@ export class CommonService {
     return sessionStorage.getItem('role')
   }
   static async listProcessesService() {
-    const resp = await useGet<ResultVO<{ processes: Process[] }>>('processes')
-    return resp.data.value
+    const data = await useGet<Process[]>('processes')
+    console.log(data.data.value?.data)
+    return data.data.value?.data
   }
 }

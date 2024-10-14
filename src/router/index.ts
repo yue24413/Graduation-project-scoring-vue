@@ -31,6 +31,10 @@ const routes: RouteRecordRaw[] = [
           {
             path: '',
             component: () => import('@/views/main/teacher/TutorStudentsView.vue')
+          },
+          {
+            path: 'processes/:pid/types/:auth',
+            component: () => import('@/views/main/teacher/ProcessView.vue')
           }
         ]
       },
@@ -45,7 +49,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/login'
+    redirect: '/'
   }
 ]
 const router = createRouter({

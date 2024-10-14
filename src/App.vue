@@ -29,7 +29,6 @@ body {
 
 #app {
   max-width: 100%;
-  background: #f5f5f5;
   min-height: 100vh;
   border-radius: 4px;
   margin: 0 auto;
@@ -39,7 +38,6 @@ body {
 
 .my-row {
   margin: 5px 5px 10px 5px;
-  background-color: white;
   border-radius: 5px;
   padding: 25px 10px 10px 10px;
 }

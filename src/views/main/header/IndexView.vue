@@ -42,9 +42,4 @@ const logoutF = () => {
 #logout :hover {
   cursor: pointer;
 }
-
-.my-row {
-  background-color: #f5f5f5;
-  color: #ffffff;
-}
 </style>
