@@ -1,5 +1,5 @@
 import { useGet } from '@/fetch'
-import type { ProcessScore, User } from '@/type'
+import type { ProcessFile, ProcessScore, User } from '@/type'
 export class TeacherService {
   //全部学生
   static async listStudentsService() {
@@ -19,6 +19,12 @@ export class TeacherService {
   //某个过程的评分
   static async listProcessesProcessScoresService(pid: string, auth: string) {
     const data = await useGet<ProcessScore[]>(`teacher/processes/${pid}/types/${auth}`)
+    return data.data.value?.data
+  }
+
+  //
+  static async listPorcessFilesService(pid: string, auth: string) {
+    const data = await useGet<ProcessFile[]>(`teacher/processfiles/${pid}/types/${auth}`)
     return data.data.value?.data
   }
 }

@@ -60,6 +60,13 @@ export interface PSDetail {
   score?: number
   detail?: { number: number; score: number }[]
 }
+export interface ProcessFile {
+  id?: string
+  studentId?: string
+  processId?: string
+  detail?: string
+  number?: number
+}
 export interface ResultVO<T> {
   code: number
   message?: string

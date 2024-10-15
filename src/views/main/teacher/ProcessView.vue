@@ -2,9 +2,11 @@
 import { CommonService } from '@/services'
 import { PA_REVIEW } from '@/services/Const'
 import { TeacherService } from '@/services/TeacherService'
+import { useUserStore } from '@/store/UserStore'
 import type { LevelCount } from '@/type/index'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+const userStore = useUserStore()
 //从地址中得到过程id以及过程身份
 const params = useRoute().params as { pid: string; auth: string }
 
@@ -14,9 +16,11 @@ const result = await Promise.all([
     ? TeacherService.listTutorStudentsService()
     : TeacherService.listGroupStudentsService(),
   TeacherService.listProcessesProcessScoresService(params.pid, params.auth),
+  TeacherService.listPorcessFilesService(params.pid, params.auth),
   CommonService.listProcessesService()
 ])
 const studentsS = result[0]
+const processesS = result[3]
 const levelCount = ref<LevelCount>({
   score_last: 0,
   score_60: 0,
@@ -52,6 +56,14 @@ const levelCount = ref<LevelCount>({
           ；共
           <el-tag>{{ levelCount.len }}</el-tag>
         </div>
+        <el-table>
+          <el-table-column type="index" label="#" />
+          <el-table-column>
+            <template #default="scope">
+              <el-text type="primary" size="large"></el-text>
+            </template>
+          </el-table-column>
+        </el-table>
       </el-col>
     </el-row>
   </div>
