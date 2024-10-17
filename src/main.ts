@@ -17,8 +17,8 @@ app.mount('#app') /**挂载之后，Vue应用就开始控制这个DOM元素， *
 // 全局未捕获异常处理
 // 统一弹出错误信息模态框
 app.config.errorHandler = (err) => {
+  console.log(err)
   const message = err as string
-  console.error(message)
+
   createMessageDialog(message)
-  console.log('createMessageDialog')
 }

@@ -4,7 +4,7 @@ const studentsR = await TeacherService.listTutorStudentsService()
 // 直接访问scope.row.student.queueNumber和scope.row.student.projectTitle会导致错误，因为这些属性并不存在于字符串上
 </script>
 <template>
-  <el-row class="my-row">
+  <el-row class="my-row" style="margin: 0px 50px">
     <el-col style="margin-bottom: 10px">
       <el-table :data="studentsR">
         <el-table-column type="index" label="#" width="50" />

@@ -40,7 +40,6 @@ export class CommonService {
   }
   static async listProcessesService() {
     const data = await useGet<Process[]>('processes')
-    console.log(data.data.value?.data)
     return data.data.value?.data
   }
 }
