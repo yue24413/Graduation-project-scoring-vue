@@ -18,6 +18,8 @@ const useFetch = createFetch({
     afterFetch: (ctx) => {
       // 从响应获取响应体对象
       const data: ResultVO<{}> = ctx.data
+      parseObjext(data)
+      console.log(data)
       // 全局处理后端返回的异常信息。即，业务状态码不是200
       if (data.code != 200) {
         // 将传递给onFetchError
@@ -33,6 +35,29 @@ const useFetch = createFetch({
     }
   }
 })
+
+//递归对ResultVO进行处理，化为JS对象
+const parseObjext = (data: any) => {
+  let newValue = data
+  for (const [key, value] of Object.entries(data)) {
+    if (Array.isArray(value)) {
+      value.forEach((d) => parseObjext(d))
+    }
+    if (typeof value == 'object') {
+      parseObjext(value)
+    }
+    if (typeof value == 'string' && (value.includes('{') || value.includes('[')))
+      try {
+        newValue = JSON.parse(value)
+        if (typeof newValue == 'object') {
+          data[key] = parseObjext(newValue)
+        }
+      } catch (error) {
+        //
+      }
+  }
+  return newValue
+}
 //
 // 默认execute()函数通过throwOnFailed属性阻止抛出异常
 // 欲支持全局异常处理，必须结合immediate/throwOnFailed
@@ -50,7 +75,6 @@ export const usePost = async <T>(url: string, data: unknown) => {
 
 export const usePut = async <T>(url: string) => {
   const resp = useFetch(url, { immediate: false }).put().json<ResultVO<T>>()
-
   await resp.execute(true)
   return resp
 }

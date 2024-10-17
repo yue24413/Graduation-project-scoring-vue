@@ -3,7 +3,7 @@ import { CommonService } from '@/services'
 import { PA_REVIEW } from '@/services/Const'
 import { TeacherService } from '@/services/TeacherService'
 import { useUserStore } from '@/store/UserStore'
-import type { LevelCount, ProcessScore, StudentProcessScore } from '@/type/index'
+import type { LevelCount, ProcessScore, Student, StudentProcessScore, User } from '@/type/index'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -95,15 +95,15 @@ collectPS(result[1] as ProcessScore[])
           <el-table-column>
             <template #default="scope">
               <el-text>
-                {{ (scope.row as StudentProcessScore).student?.name }}
+                {{ (scope.row.student as User).name }}
               </el-text>
               <br />
               <el-text>
-                {{ (scope.row as StudentProcessScore).student?.student?.teacherName }}
+                {{ (scope.row.student.student as Student).teacherName }}
               </el-text>
               <br />
               <el-text>
-                {{ (scope.row as StudentProcessScore).student?.student?.projectTitle }}
+                {{ (scope.row.student.student as Student).projectTitle }}
               </el-text>
             </template>
           </el-table-column>

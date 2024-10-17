@@ -60,6 +60,13 @@ export interface PSDetail {
   score?: number
   detail?: { number: number; score: number }[]
 }
+
+export interface StudentProcessScore {
+  student?: User
+  averageScore?: number
+  currentTeacherScore?: number
+  psTeachers?: PSDetailTeacher[]
+}
 export interface PSDetailTeacher {
   processScoreId?: string
   teacherId?: string
@@ -68,12 +75,6 @@ export interface PSDetailTeacher {
   detail?: { number: number; score: number }[]
 }
 
-export interface StudentProcessScore {
-  student?: User
-  averageScore?: number
-  currentTeacherScore?: number
-  psTeachers?: PSDetailTeacher[]
-}
 export interface ProcessFile {
   id?: string
   studentId?: string

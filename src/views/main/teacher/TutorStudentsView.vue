@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { TeacherService } from '@/services/TeacherService'
+import type { Student } from '@/type'
 const studentsR = await TeacherService.listTutorStudentsService()
 // 直接访问scope.row.student.queueNumber和scope.row.student.projectTitle会导致错误，因为这些属性并不存在于字符串上
 </script>
@@ -11,12 +12,12 @@ const studentsR = await TeacherService.listTutorStudentsService()
         <el-table-column property="name" min-width="50" />
         <el-table-column min-width="50">
           <template #default="scope">
-            {{ scope.row.groupNumber }}组；{{ JSON.parse(scope.row.student).queueNumber }}号
+            {{ scope.row.groupNumber }}组；{{ (scope.row.student as Student).queueNumber }}号
           </template>
         </el-table-column>
         <el-table-column min-width="150">
           <template #default="scope">
-            {{ JSON.parse(scope.row.student).projectTitle }}
+            {{ (scope.row.student as Student).projectTitle }}
           </template>
         </el-table-column>
       </el-table>
