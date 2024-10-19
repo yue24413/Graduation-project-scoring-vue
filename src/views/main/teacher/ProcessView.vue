@@ -3,10 +3,17 @@ import { CommonService } from '@/services'
 import { PA_REVIEW } from '@/services/Const'
 import { TeacherService } from '@/services/TeacherService'
 import { useUserStore } from '@/store/UserStore'
-import type { LevelCount, ProcessScore, Student, StudentProcessScore, User } from '@/type/index'
-import { ref } from 'vue'
+import {
+  ProcessFile,
+  type LevelCount,
+  type ProcessScore,
+  type Student,
+  type StudentProcessScore,
+  type User
+} from '@/type/index'
+import { Box, Brush } from '@element-plus/icons-vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-
 const userStore = useUserStore()
 //从地址中得到过程id以及过程身份
 const params = useRoute().params as { pid: string; auth: string }
@@ -25,6 +32,7 @@ const result = await Promise.all([
   CommonService.listProcessesService()
 ])
 const studentsS = result[0]
+const processesS = result[3]
 const levelCount = ref<LevelCount>({
   score_last: 0,
   score_60: 0,
@@ -61,8 +69,26 @@ const collectPS = (pses: ProcessScore[]) => {
     })
   })
 }
-console.log(result[1]?.values)
 collectPS(result[1] as ProcessScore[])
+
+/********* */
+const currentProcessAttach = processesS?.find((ps) => ps.id == params.pid)?.studentAttach
+
+const processFilesR = ref<ProcessFile[]>()
+processFilesR.value = result[2]
+const processFileC = computed(
+  () => (sid: string, number: number) =>
+    processFilesR.value?.find((pf) => pf.studentId == sid && pf.number == number)
+)
+const clickAttachF = async (sid: string, number: number) => {
+  const pname = processFilesR.value?.find(
+    (pf) => pf.studentId == sid && pf.number == number
+  )?.detail
+  pname && (await TeacherService.getProcessFileService(pname))
+}
+
+/********************* */
+//评分
 </script>
 <template>
   <div>
@@ -107,7 +133,24 @@ collectPS(result[1] as ProcessScore[])
               </el-text>
             </template>
           </el-table-column>
-          <el-table-column></el-table-column>
+          <el-table-column label="附件">
+            <template #defult="scope">
+              <template v-for="(attach, index) of currentProcessAttach" :key="index">
+                <el-button
+                  :icon="attach.number == 1 ? Box : Brush"
+                  :color="attach.number == 1 ? '#409EFF' : '#626aef'"
+                  style="margin-bottom: 5px"
+                  @click="
+                    clickAttachF((scope.row as StudentProcessScore).student?.id!, attach.number!)
+                  "
+                  v-if="
+                    processFileC((scope.row as StudentProcessScore).student?.id!, attach.number!)
+                  ">
+                  {{ attach.name }}
+                </el-button>
+              </template>
+            </template>
+          </el-table-column>
         </el-table>
       </el-col>
     </el-row>

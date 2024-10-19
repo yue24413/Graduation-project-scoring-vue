@@ -1,6 +1,8 @@
+import { createProgressNotification } from '@/components/progress'
 import { useGet } from '@/fetch'
 import { ListTutorStudentsStore } from '@/store/ListTutorStudentsStore'
-import type { ProcessFile, ProcessScore, User } from '@/type'
+import type { ProcessFile, ProcessScore, Progress, User } from '@/type'
+import { ref } from 'vue'
 export class TeacherService {
   //全部学生
   static async listStudentsService() {
@@ -32,5 +34,15 @@ export class TeacherService {
   static async listPorcessFilesService(pid: string, auth: string) {
     const data = await useGet<ProcessFile[]>(`teacher/processfiles/${pid}/types/${auth}`)
     return data.data.value?.data
+  }
+  //从服务器下载指定文件，并在下载过程中更新一个进度条通知
+  static getProcessFileService = async (name: string) => {
+    //使用 encodeURIComponent 对文件名进行编码
+    const pname = encodeURIComponent(name)
+    const progressR = ref<{ progress: Progress }>({
+      progress: { percentage: 0, title: name, rate: 0, total: 0, loaded: 0 }
+    })
+    const progNotiF = createProgressNotification(progressR.value)
+    const resp = await useGet(`teacher/download/${pname}`)
   }
 }
