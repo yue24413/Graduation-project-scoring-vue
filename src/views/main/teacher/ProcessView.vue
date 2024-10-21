@@ -3,18 +3,21 @@ import { CommonService } from '@/services'
 import { PA_REVIEW } from '@/services/Const'
 import { TeacherService } from '@/services/TeacherService'
 import { useUserStore } from '@/store/UserStore'
-import {
+import type {
+  LevelCount,
+  PSDetail,
+  PSDetailTeacher,
   ProcessFile,
-  type LevelCount,
-  type ProcessScore,
-  type Student,
-  type StudentProcessScore,
-  type User
+  ProcessScore,
+  Student,
+  StudentProcessScore,
+  User
 } from '@/type/index'
 import { Box, Brush } from '@element-plus/icons-vue'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 const userStore = useUserStore()
+const userS = userStore.userS
 //从地址中得到过程id以及过程身份
 const params = useRoute().params as { pid: string; auth: string }
 
@@ -66,6 +69,37 @@ const collectPS = (pses: ProcessScore[]) => {
 
     const teacherPSs = pses.filter((ps) => {
       ps.studentId == stuD.student?.id
+      if (!teacherPSs) return
+      teacherPSs.forEach((ps) => {
+        const psDetail = ps.detail as PSDetail
+        psDetail.score && (temp += psDetail.score)
+        const psTeacher: PSDetailTeacher = {
+          processScoreId: ps.id,
+          teacherId: ps.teacherId,
+          teacherName: psDetail.teacherName,
+          score: psDetail.score,
+          detail: psDetail.detail
+        }
+        stuD.psTeachers?.push(psTeacher)
+        if (!userS.value) return
+        if (ps.teacherId == userS.value.id) {
+          stuD.currentTeacherScore = psDetail.score
+        }
+        stuD.psTeachers?.length! > 0 && (stuD.averageScore = temp / stuD.psTeachers?.length!)
+        stuD.averageScore = Math.round(stuD.averageScore!)
+
+        if (stuD.averageScore >= 90) {
+          levelCount.value.score_90++
+        } else if (stuD.averageScore >= 80 && stuD.averageScore < 90) {
+          levelCount.value.score_80++
+        } else if (stuD.averageScore >= 70 && stuD.averageScore < 80) {
+          levelCount.value.score_70++
+        } else if (stuD.averageScore >= 60 && stuD.averageScore < 70) {
+          levelCount.value.score_60++
+        } else if (stuD.averageScore < 60) {
+          levelCount.value.score_last++
+        }
+      })
     })
   })
 }
@@ -148,7 +182,13 @@ const clickAttachF = async (sid: string, number: number) => {
                   ">
                   {{ attach.name }}
                 </el-button>
+                <br />
               </template>
+            </template>
+          </el-table-column>
+          <el-table-column label="评分/平均分">
+            <template #defult="scope">
+              {{ scope.row.currentTeacherScore }} / {{ scope.row.averageScore }}
             </template>
           </el-table-column>
         </el-table>

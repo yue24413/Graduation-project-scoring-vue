@@ -93,5 +93,5 @@ export interface Progress {
 export interface ResultVO<T> {
   code: number
   message?: string
-  data: T
+  data?: T
 }
