@@ -13,7 +13,6 @@ import type {
   StudentProcessScore,
   User
 } from '@/type/index'
-import { Box, Brush } from '@element-plus/icons-vue'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 const userStore = useUserStore()
@@ -167,7 +166,7 @@ const clickAttachF = async (sid: string, number: number) => {
               </el-text>
             </template>
           </el-table-column>
-          <el-table-column label="附件">
+          <!-- <el-table-column label="附件">
             <template #defult="scope">
               <template v-for="(attach, index) of currentProcessAttach" :key="index">
                 <el-button
@@ -185,7 +184,7 @@ const clickAttachF = async (sid: string, number: number) => {
                 <br />
               </template>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column label="评分/平均分">
             <template #defult="scope">
               {{ scope.row.currentTeacherScore }} / {{ scope.row.averageScore }}
