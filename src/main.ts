@@ -10,6 +10,7 @@ const app = createApp(App) /*初始化 */
 // for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 //   app.component(key, component)
 // }
+
 app.use(ElementPlus)
 app.use(router) /**将前面导入的路由实例注入到Vue应用中 */
 app.mount('#app') /**挂载之后，Vue应用就开始控制这个DOM元素， */

@@ -2,9 +2,9 @@ import { createNoticeBoard } from '@/components/Notice/index'
 import { useGet, usePost } from '@/fetch'
 import router from '@/router'
 import * as consty from '@/services/Const'
-import { ProcessesTypesStore } from '@/store/ProcessesTypesStore'
+import { indexStores } from '@/store'
 import type { Process, User } from '@/type/index'
-
+// indexStores
 export class CommonService {
   static refreshPage = async () => {
     setTimeout(() => {
@@ -41,11 +41,12 @@ export class CommonService {
     return sessionStorage.getItem('role')
   }
   static async listProcessesService() {
-    if (!ProcessesTypesStore().Processes.value) {
+    if (!indexStores.ProcessesTypesStore().Processes.value) {
       const data = await useGet<Process[]>('processes')
-      ProcessesTypesStore().Processes.value = data.data.value!
-      return data.data.value?.data
+      indexStores.ProcessesTypesStore().Processes.value = data.data.value!
     }
-    return ProcessesTypesStore().Processes.value?.data
+    return indexStores.ProcessesTypesStore().Processes.value?.data
+    // const data = await useGet<Process[]>('processes')
+    // return data.data.value?.data
   }
 }

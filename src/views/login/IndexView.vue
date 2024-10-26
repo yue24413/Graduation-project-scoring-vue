@@ -35,7 +35,7 @@ import { computed, onMounted, ref, watchEffect } from 'vue'
 const starsContainer = ref(null)
 const stars = ref([])
 const userR = ref({ number: '', password: '' })
-
+console.log('loginView')
 // 处理登录逻辑
 const onLogin = async () => {
   const user = {

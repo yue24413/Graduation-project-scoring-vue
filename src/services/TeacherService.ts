@@ -1,8 +1,9 @@
 import { createProgressNotification } from '@/components/progress'
-import { useGet } from '@/fetch'
-import { ListTutorStudentsStore } from '@/store/ListTutorStudentsStore'
-import type { ProcessFile, ProcessScore, Progress, User } from '@/type'
+import { useGet, usePost } from '@/fetch'
+import { teacherStores } from '@/store/TeacherStores'
+import type { ProcessFile, ProcessResult, ProcessScore, Progress, User } from '@/type'
 import { ref } from 'vue'
+const TEACHER = 'teacher'
 export class TeacherService {
   //全部学生
   static async listStudentsService() {
@@ -11,23 +12,42 @@ export class TeacherService {
   }
   //基于当前组打分
   static async listGroupStudentsService() {
-    const data = await useGet<User[]>(`teacher/students/group`)
-    return data.data.value?.data
+    if (!teacherStores.ListGroupStudentsStore.studentsS.value) {
+      const data = await useGet<User[]>(`teacher/students/group`)
+      teacherStores.ListGroupStudentsStore.studentsS.value = data.data.value!
+    }
+    return teacherStores.ListGroupStudentsStore.studentsS.value?.data
   }
   //基于导师所带学生组打分
   static async listTutorStudentsService() {
-    if (!ListTutorStudentsStore().studentsS.value) {
+    if (!teacherStores.ListTutorStudentsStore.studentsS.value) {
       const data = await useGet<User[]>(`teacher/students/tutor`)
-      ListTutorStudentsStore().studentsS.value = data.data.value!
-      return data.data.value?.data
+      teacherStores.ListTutorStudentsStore.studentsS.value = data.data.value!
     }
-    return ListTutorStudentsStore().studentsS.value?.data
+    return teacherStores.ListTutorStudentsStore.studentsS.value?.data
   }
   //某个过程的评分
   static async listProcessesProcessScoresService(pid: string, auth: string) {
-    const data = await useGet<ProcessScore[]>(`teacher/processes/${pid}/types/${auth}`)
-
-    return data.data.value?.data
+    console.log('pid: ' + pid)
+    const exists = teacherStores.ListProcessesProcessScoresStore.getProcessResult(pid)
+    if (!exists) {
+      const prop = await useGet<ProcessScore[]>(`teacher/processes/${pid}/types/${auth}`)
+      console.log('useGet<ProcessScore>')
+      console.log(prop.data.value)
+      // 检查数据是否存在
+      if (prop.data.value) {
+        // 将获取到的数据转换为 ResultVO<ProcessScore> 数组
+        const newResultVO: ProcessResult<ProcessScore[]> = {
+          processId: pid,
+          result: prop.data.value
+        }
+        // 将新的 ResultVO<ProcessScore> 对象添加到 store 中
+        teacherStores.ListProcessesProcessScoresStore.addProcessResult(newResultVO)
+        console.log('newResultVO' + newResultVO)
+      }
+    }
+    console.log(teacherStores.ListProcessesProcessScoresStore.getProcessResult(pid))
+    return teacherStores.ListProcessesProcessScoresStore.getProcessResult(pid)
   }
 
   //
@@ -44,5 +64,14 @@ export class TeacherService {
     })
     const progNotiF = createProgressNotification(progressR.value)
     const resp = await useGet(`teacher/download/${pname}`)
+  }
+
+  //添加评分
+  static addPorcessScoreService = async (ps: ProcessScore, auth: string) => {
+    if (!teacherStores.AddPorcessScoreStore.PorcessScoreS.value) {
+      const data = await usePost<ProcessScore[]>(`${TEACHER}/processscores/types/${auth}`, ps)
+      teacherStores.AddPorcessScoreStore.PorcessScoreS.value = data.data.value!
+    }
+    return teacherStores.AddPorcessScoreStore.PorcessScoreS.value?.data
   }
 }

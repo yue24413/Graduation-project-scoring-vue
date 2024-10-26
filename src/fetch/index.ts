@@ -19,7 +19,6 @@ const useFetch = createFetch({
       // 从响应获取响应体对象
       const data: ResultVO<{}> = ctx.data
       parseObjext(data)
-      console.log(data)
       // 全局处理后端返回的异常信息。即，业务状态码不是200
       if (data.code != 200) {
         // 将传递给onFetchError

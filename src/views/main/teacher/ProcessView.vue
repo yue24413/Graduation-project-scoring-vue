@@ -13,7 +13,7 @@ import type {
   StudentProcessScore,
   User
 } from '@/type/index'
-import { computed, ref } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 const userStore = useUserStore()
 const userS = userStore.userS
@@ -26,14 +26,15 @@ const result = await Promise.all([
     ? TeacherService.listTutorStudentsService()
     : TeacherService.listGroupStudentsService(),
 
-  //通过pid和auth双重 得到点击的某个过程
+  //1 通过pid和auth双重 得到点击的某个过程
   TeacherService.listProcessesProcessScoresService(params.pid, params.auth),
-  //File
+  //2 File
   TeacherService.listPorcessFilesService(params.pid, params.auth),
-  //导航
+  //3 导航
   CommonService.listProcessesService()
 ])
-const studentsS = result[0]
+const studentsS = ref<User[]>()
+studentsS.value = result[0]
 const processesS = result[3]
 const levelCount = ref<LevelCount>({
   score_last: 0,
@@ -41,7 +42,7 @@ const levelCount = ref<LevelCount>({
   score_70: 0,
   score_80: 0,
   score_90: 0,
-  len: studentsS?.length || 0
+  len: studentsS.value?.length || 0
 })
 
 /*:data="currentPStudentsR" 表示这个表格将会使用名为 currentPStudentsR 的数据数组作为其数据源。这个数组中的每个元素通常代表一行数据，而每一行数据中的键（key）则会对应表格中的列。 */
@@ -54,11 +55,11 @@ const collectPS = (pses: ProcessScore[]) => {
     score_70: 0,
     score_80: 0,
     score_90: 0,
-    len: studentsS?.length || 0
+    len: studentsS.value?.length || 0
   }
+  // console.log(levelCount.value)
   currentPStudentsR.value = []
-  studentsS?.forEach((s) => {
-    console.log(s)
+  studentsS.value?.forEach((s) => {
     const stuD: StudentProcessScore = {}
     stuD.student = s
     currentPStudentsR.value.push(stuD)
@@ -66,49 +67,60 @@ const collectPS = (pses: ProcessScore[]) => {
     stuD.psTeachers = []
     stuD.averageScore = temp
 
-    const teacherPSs = pses.filter((ps) => {
-      ps.studentId == stuD.student?.id
-      if (!teacherPSs) return
-      teacherPSs.forEach((ps) => {
-        const psDetail = ps.detail as PSDetail
-        psDetail.score && (temp += psDetail.score)
-        const psTeacher: PSDetailTeacher = {
-          processScoreId: ps.id,
-          teacherId: ps.teacherId,
-          teacherName: psDetail.teacherName,
-          score: psDetail.score,
-          detail: psDetail.detail
-        }
-        stuD.psTeachers?.push(psTeacher)
-        if (!userS.value) return
-        if (ps.teacherId == userS.value.id) {
-          stuD.currentTeacherScore = psDetail.score
-        }
-        stuD.psTeachers?.length! > 0 && (stuD.averageScore = temp / stuD.psTeachers?.length!)
-        stuD.averageScore = Math.round(stuD.averageScore!)
+    const teacherPSs = pses.filter((ps) => ps.studentId == stuD.student?.id)
+    if (!teacherPSs) return
+    //当前循环到的学生 有老师评分
+    teacherPSs.forEach((ps) => {
+      const psDetail = ps.detail as PSDetail
+      psDetail.score && (temp += psDetail.score)
+      const psTeacher: PSDetailTeacher = {
+        processScoreId: ps.id,
+        teacherId: ps.teacherId,
+        teacherName: psDetail.teacherName,
+        score: psDetail.score,
+        detail: psDetail.detail
+      }
+      stuD.psTeachers?.push(psTeacher)
+      if (!userS.value) return
+      if (ps.teacherId == userS.value.id) {
+        stuD.currentTeacherScore = psDetail.score
+      }
+      stuD.psTeachers?.length! > 0 && (stuD.averageScore = temp / stuD.psTeachers?.length!)
+      stuD.averageScore = Math.round(stuD.averageScore!)
 
-        if (stuD.averageScore >= 90) {
-          levelCount.value.score_90++
-        } else if (stuD.averageScore >= 80 && stuD.averageScore < 90) {
-          levelCount.value.score_80++
-        } else if (stuD.averageScore >= 70 && stuD.averageScore < 80) {
-          levelCount.value.score_70++
-        } else if (stuD.averageScore >= 60 && stuD.averageScore < 70) {
-          levelCount.value.score_60++
-        } else if (stuD.averageScore < 60) {
-          levelCount.value.score_last++
-        }
-      })
+      if (stuD.averageScore >= 90) {
+        levelCount.value.score_90++
+      } else if (stuD.averageScore >= 80 && stuD.averageScore < 90) {
+        levelCount.value.score_80++
+      } else if (stuD.averageScore >= 70 && stuD.averageScore < 80) {
+        levelCount.value.score_70++
+      } else if (stuD.averageScore >= 60 && stuD.averageScore < 70) {
+        levelCount.value.score_60++
+      } else if (stuD.averageScore < 60) {
+        levelCount.value.score_last++
+      }
     })
   })
 }
-collectPS(result[1] as ProcessScore[])
 
+// collectPS(result[1] as ProcessScore[])
+watch(
+  studentsS,
+  (newVal) => {
+    if (newVal) {
+      levelCount.value.len = newVal.length
+      collectPS(result[1]?.data as ProcessScore[])
+    }
+  },
+  { immediate: true }
+)
+// console.log(levelCount.value)
 /********* */
 const currentProcessAttach = processesS?.find((ps) => ps.id == params.pid)?.studentAttach
 
 const processFilesR = ref<ProcessFile[]>()
 processFilesR.value = result[2]
+
 const processFileC = computed(
   () => (sid: string, number: number) =>
     processFilesR.value?.find((pf) => pf.studentId == sid && pf.number == number)
@@ -122,6 +134,14 @@ const clickAttachF = async (sid: string, number: number) => {
 
 /********************* */
 //评分
+const gradingDialog = defineAsyncComponent(() => import('./GradingDialog.vue'))
+const gradingDialogVisable = ref(false)
+const currentStudentR = ref<StudentProcessScore>()
+const gradeF = (s: StudentProcessScore) => {
+  gradingDialogVisable.value = true
+  currentStudentR.value = s
+}
+const addProcessScoreF = (ps: ProcessScore) => {}
 </script>
 <template>
   <div>
@@ -129,11 +149,13 @@ const clickAttachF = async (sid: string, number: number) => {
       <el-col>
         <div>
           优秀
-          <el-tag :type="levelCount.score_90 > 0 ? 'success' : ''">
+          <el-tag :type="levelCount.score_90 > 0 ? 'sucess' : ''">
             {{ levelCount.score_90 }}
           </el-tag>
           ；良好
-          <el-tag :type="levelCount.score_80 > 0 ? 'info' : ''">{{ levelCount.score_80 }}</el-tag>
+          <el-tag :type="levelCount.score_80 > 0 ? 'info' : ''">
+            {{ levelCount.score_80 }}
+          </el-tag>
           ；中等
           <el-tag :type="levelCount.score_70 > 0 ? 'warning' : ''">
             {{ levelCount.score_70 }}
@@ -166,9 +188,9 @@ const clickAttachF = async (sid: string, number: number) => {
               </el-text>
             </template>
           </el-table-column>
-          <!-- <el-table-column label="附件">
+          <el-table-column label="附件">
             <template #defult="scope">
-              <template v-for="(attach, index) of currentProcessAttach" :key="index">
+              <!-- <template v-for="(attach, index) of currentProcessAttach" :key="index">
                 <el-button
                   :icon="attach.number == 1 ? Box : Brush"
                   :color="attach.number == 1 ? '#409EFF' : '#626aef'"
@@ -182,16 +204,29 @@ const clickAttachF = async (sid: string, number: number) => {
                   {{ attach.name }}
                 </el-button>
                 <br />
-              </template>
+              </template> -->
             </template>
-          </el-table-column> -->
+          </el-table-column>
           <el-table-column label="评分/平均分">
             <template #defult="scope">
               {{ scope.row.currentTeacherScore }} / {{ scope.row.averageScore }}
+              <br />
+            </template>
+          </el-table-column>
+          <el-table-column label="操作">
+            <template #default="scope">
+              <el-button type="primary" @click="gradeF(scope.row as StudentProcessScore)">
+                评分
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-col>
     </el-row>
   </div>
+  <gradingDialog
+    v-if="gradingDialogVisable"
+    :student="currentPStudentsR"
+    :add-process-score="addProcessScoreF"
+    :processId="params.pid" />
 </template>
