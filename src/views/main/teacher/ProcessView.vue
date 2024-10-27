@@ -9,6 +9,7 @@ import type {
   PSDetailTeacher,
   ProcessFile,
   ProcessScore,
+  ResultVO,
   Student,
   StudentProcessScore,
   User
@@ -16,15 +17,15 @@ import type {
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 const userStore = useUserStore()
-const userS = userStore.userS
+const userS = userStore.userS.value as ResultVO<User>
 //从地址中得到过程id以及过程身份
 const params = useRoute().params as { pid: string; auth: string }
 
 //result数组封装各个功能
 const result = await Promise.all([
   params.auth == PA_REVIEW
-    ? TeacherService.listTutorStudentsService()
-    : TeacherService.listGroupStudentsService(),
+    ? TeacherService.listGroupStudentsService()
+    : TeacherService.listTutorStudentsService(),
 
   //1 通过pid和auth双重 得到点击的某个过程
   TeacherService.listProcessesProcessScoresService(params.pid, params.auth),
@@ -69,6 +70,7 @@ const collectPS = (pses: ProcessScore[]) => {
 
     const teacherPSs = pses.filter((ps) => ps.studentId == stuD.student?.id)
     if (!teacherPSs) return
+
     //当前循环到的学生 有老师评分
     teacherPSs.forEach((ps) => {
       const psDetail = ps.detail as PSDetail
@@ -80,9 +82,13 @@ const collectPS = (pses: ProcessScore[]) => {
         score: psDetail.score,
         detail: psDetail.detail
       }
+      //塞得分
       stuD.psTeachers?.push(psTeacher)
-      if (!userS.value) return
-      if (ps.teacherId == userS.value.id) {
+      console.log(ps.teacherId)
+      console.log(userS.data?.id)
+      if (!userS) return
+      //判断是不是当前登录的user
+      if (ps.teacherId == userS.data?.id) {
         stuD.currentTeacherScore = psDetail.score
       }
       stuD.psTeachers?.length! > 0 && (stuD.averageScore = temp / stuD.psTeachers?.length!)
@@ -102,8 +108,6 @@ const collectPS = (pses: ProcessScore[]) => {
     })
   })
 }
-
-// collectPS(result[1] as ProcessScore[])
 watch(
   studentsS,
   (newVal) => {
@@ -136,6 +140,7 @@ const clickAttachF = async (sid: string, number: number) => {
 //评分
 const gradingDialog = defineAsyncComponent(() => import('./GradingDialog.vue'))
 const gradingDialogVisable = ref(false)
+console.log(gradingDialogVisable)
 const currentStudentR = ref<StudentProcessScore>()
 const gradeF = (s: StudentProcessScore) => {
   gradingDialogVisable.value = true
@@ -208,9 +213,12 @@ const addProcessScoreF = (ps: ProcessScore) => {}
             </template>
           </el-table-column>
           <el-table-column label="评分/平均分">
-            <template #defult="scope">
+            <template #default="scope">
               {{ scope.row.currentTeacherScore }} / {{ scope.row.averageScore }}
               <br />
+              <span v-for="(t, index) of scope.row.psTeachers" :key="index">
+                {{ t.teacherName }};
+              </span>
             </template>
           </el-table-column>
           <el-table-column label="操作">
@@ -226,7 +234,7 @@ const addProcessScoreF = (ps: ProcessScore) => {}
   </div>
   <gradingDialog
     v-if="gradingDialogVisable"
-    :student="currentPStudentsR"
+    :student="currentStudentR!"
     :add-process-score="addProcessScoreF"
     :processId="params.pid" />
 </template>

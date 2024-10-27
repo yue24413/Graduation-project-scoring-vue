@@ -16,6 +16,7 @@ export class TeacherService {
       const data = await useGet<User[]>(`teacher/students/group`)
       teacherStores.ListGroupStudentsStore.studentsS.value = data.data.value!
     }
+    console.log(teacherStores.ListGroupStudentsStore.studentsS.value?.data)
     return teacherStores.ListGroupStudentsStore.studentsS.value?.data
   }
   //基于导师所带学生组打分

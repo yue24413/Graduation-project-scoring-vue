@@ -1,6 +1,7 @@
 import { CommonService } from '@/services'
 import * as consty from '@/services/Const'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+// createWebHistory
 const routes: RouteRecordRaw[] = [
   {
     path: '/login',
@@ -53,6 +54,7 @@ const routes: RouteRecordRaw[] = [
   }
 ]
 const router = createRouter({
+  // history: createWebHashHistory(),
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: routes
 })

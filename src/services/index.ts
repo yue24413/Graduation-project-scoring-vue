@@ -3,6 +3,8 @@ import { useGet, usePost } from '@/fetch'
 import router from '@/router'
 import * as consty from '@/services/Const'
 import { indexStores } from '@/store'
+import { useUserStore } from '@/store/UserStore'
+
 import type { Process, User } from '@/type/index'
 // indexStores
 export class CommonService {
@@ -14,11 +16,13 @@ export class CommonService {
   // login
   static loginService = async (user: User) => {
     const resp = await usePost<{ user: User }>('login', user)
+
     const token = resp.response.value?.headers.get('token')
     token && sessionStorage.setItem('token', token)
     const role = resp.response.value?.headers.get('role')
     role && sessionStorage.setItem('role', role)
-    // const name = resp.response.value?.headers.get('name')
+    role && useUserStore().setUserSessionStorage(resp.data.value as User, role)
+    const name = useUserStore().userS.value?.name
     if (token) {
       // 显示成功消息
       createNoticeBoard('登录成功!', '欢迎您！' + name)

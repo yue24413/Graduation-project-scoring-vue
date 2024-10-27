@@ -17,19 +17,19 @@ const process = processesS?.find((p) => {
   p.id == props.processId
 })
 //过程下的具体项
-const processItims = process?.items ??[]
-
+const processItims = process?.items ?? []
 </script>
 <template>
   <div>
     <el-dialog v-model="dialogVisible" title="Grading" @close="dialogVisible = false">
       <el-row class="row">
         <el-col>
-          <el-text>{{ props.student.student?.name }}</el-text>
+          <el-text type="primary">{{ props.student.student?.name }}</el-text>
           平均分
         </el-col>
         <el-col>
-          <el-text>{{ props.student.averageScore }}</el-text>
+          <el-text type="primary">{{ props.student.averageScore }}</el-text>
+          得分
         </el-col>
       </el-row>
       <el-row class="row">
