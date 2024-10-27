@@ -147,6 +147,7 @@ const gradeF = (s: StudentProcessScore) => {
   currentStudentR.value = s
 }
 const addProcessScoreF = (ps: ProcessScore) => {}
+const closeF = () => (gradingDialogVisable.value = false)
 </script>
 <template>
   <div>
@@ -235,6 +236,7 @@ const addProcessScoreF = (ps: ProcessScore) => {}
   <gradingDialog
     v-if="gradingDialogVisable"
     :student="currentStudentR!"
+    :close="closeF"
     :add-process-score="addProcessScoreF"
     :processId="params.pid" />
 </template>
