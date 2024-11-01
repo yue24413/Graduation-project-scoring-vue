@@ -50,7 +50,5 @@ export class CommonService {
       indexStores.ProcessesTypesStore().Processes.value = data.data.value!
     }
     return indexStores.ProcessesTypesStore().Processes.value?.data
-    // const data = await useGet<Process[]>('processes')
-    // return data.data.value?.data
   }
 }

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { CommonService } from '@/services/index'
-import type { Process } from '@/type'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -11,18 +10,20 @@ const menus = [
   }
 ]
 
-const processesS = ref<Process[]>()
-processesS.value = await CommonService.listProcessesService()
-processesS.value!.forEach((ps) => {
-  menus.push({ name: ps.name!, path: `teacher/processes/${ps.id}/types/${ps.auth}` })
+const processesS = await CommonService.listProcessesService()
+processesS!.forEach((ps) => {
+  menus.push({ name: ps.name!, path: `/teacher/processes/${ps.id}/types/${ps.auth}` })
 })
 const route = useRoute()
+console.log(route.params)
+console.log(menus)
 const activeIndexR = ref('')
 watch(
   route,
   () => {
     const p = menus.find((mn) => mn.path == route.path)
     activeIndexR.value = p?.path ?? ''
+    console.log(p?.path)
   },
   { immediate: true }
 )

@@ -1,6 +1,7 @@
 import { CommonService } from '@/services'
 import * as consty from '@/services/Const'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+// createWebHashHistory
 // createWebHistory
 const routes: RouteRecordRaw[] = [
   {

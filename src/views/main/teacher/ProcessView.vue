@@ -14,13 +14,20 @@ import type {
   StudentProcessScore,
   User
 } from '@/type/index'
+
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 const userStore = useUserStore()
 const userS = userStore.userS.value as ResultVO<User>
 //从地址中得到过程id以及过程身份
 const params = useRoute().params as { pid: string; auth: string }
+console.log(params)
+// ...
 
+// onBeforeRouteUpdate(async (to, from) => {
+//   // 对路由变化做出响应...
+//   fullPath.value = await fetchUser(to.params.id)
+// })
 //result数组封装各个功能
 const result = await Promise.all([
   params.auth == PA_REVIEW
@@ -34,6 +41,7 @@ const result = await Promise.all([
   //3 导航
   CommonService.listProcessesService()
 ])
+
 const studentsS = ref<User[]>()
 studentsS.value = result[0]
 const processesS = result[3]
@@ -84,8 +92,6 @@ const collectPS = (pses: ProcessScore[]) => {
       }
       //塞得分
       stuD.psTeachers?.push(psTeacher)
-      console.log(ps.teacherId)
-      console.log(userS.data?.id)
       if (!userS) return
       //判断是不是当前登录的user
       if (ps.teacherId == userS.data?.id) {
