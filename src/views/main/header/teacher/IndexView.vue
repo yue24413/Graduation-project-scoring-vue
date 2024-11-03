@@ -11,6 +11,7 @@ const menus = [
 ]
 
 const processesS = await CommonService.listProcessesService()
+// processesS.value = await CommonService.listProcessesService()
 processesS!.forEach((ps) => {
   menus.push({ name: ps.name!, path: `/teacher/processes/${ps.id}/types/${ps.auth}` })
 })
@@ -23,7 +24,7 @@ watch(
   () => {
     const p = menus.find((mn) => mn.path == route.path)
     activeIndexR.value = p?.path ?? ''
-    console.log(p?.path)
+    // console.log(p?.path)
   },
   { immediate: true }
 )

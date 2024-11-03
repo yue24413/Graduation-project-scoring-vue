@@ -18,26 +18,30 @@ import type {
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 const userStore = useUserStore()
+const route = useRoute()
+console.log(route)
+
 const userS = userStore.userS.value as ResultVO<User>
 //从地址中得到过程id以及过程身份
-const params = useRoute().params as { pid: string; auth: string }
-console.log(params)
-// ...
+const params = ref<{ pid: string; auth: string }>(
+  useRoute().params as { pid: string; auth: string }
+)
+// console.log(params)
+watch(route, (newVal) => {
+  params.value = newVal.params as { pid: string; auth: string }
+  // console.log(params.value)
+})
 
-// onBeforeRouteUpdate(async (to, from) => {
-//   // 对路由变化做出响应...
-//   fullPath.value = await fetchUser(to.params.id)
-// })
 //result数组封装各个功能
 const result = await Promise.all([
-  params.auth == PA_REVIEW
+  params.value.auth == PA_REVIEW
     ? TeacherService.listGroupStudentsService()
     : TeacherService.listTutorStudentsService(),
 
   //1 通过pid和auth双重 得到点击的某个过程
-  TeacherService.listProcessesProcessScoresService(params.pid, params.auth),
+  TeacherService.listProcessesProcessScoresService(params.value.pid, params.value.auth),
   //2 File
-  TeacherService.listPorcessFilesService(params.pid, params.auth),
+  TeacherService.listPorcessFilesService(params.value.pid, params.value.auth),
   //3 导航
   CommonService.listProcessesService()
 ])
@@ -126,7 +130,7 @@ watch(
 )
 // console.log(levelCount.value)
 /********* */
-const currentProcessAttach = processesS?.find((ps) => ps.id == params.pid)?.studentAttach
+const currentProcessAttach = processesS?.find((ps) => ps.id == params.value.pid)?.studentAttach
 
 const processFilesR = ref<ProcessFile[]>()
 processFilesR.value = result[2]
@@ -161,23 +165,23 @@ const closeF = () => (gradingDialogVisable.value = false)
       <el-col>
         <div>
           优秀
-          <el-tag :type="levelCount.score_90 > 0 ? 'sucess' : ''">
+          <el-tag :type="levelCount.score_90 > 0 ? 'success' : 'primary'">
             {{ levelCount.score_90 }}
           </el-tag>
           ；良好
-          <el-tag :type="levelCount.score_80 > 0 ? 'info' : ''">
+          <el-tag :type="levelCount.score_80 > 0 ? 'info' : 'primary'">
             {{ levelCount.score_80 }}
           </el-tag>
           ；中等
-          <el-tag :type="levelCount.score_70 > 0 ? 'warning' : ''">
+          <el-tag :type="levelCount.score_70 > 0 ? 'warning' : 'primary'">
             {{ levelCount.score_70 }}
           </el-tag>
           ；及格
-          <el-tag :type="levelCount.score_60 > 0 ? 'primary' : ''">
+          <el-tag :type="levelCount.score_60 > 0 ? 'primary' : 'primary'">
             {{ levelCount.score_60 }}
           </el-tag>
           ；不及格
-          <el-tag :type="levelCount.score_last > 0 ? 'danger' : ''">
+          <el-tag :type="levelCount.score_last > 0 ? 'danger' : 'primary'">
             {{ levelCount.score_last }}
           </el-tag>
           ；共
