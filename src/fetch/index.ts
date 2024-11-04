@@ -63,7 +63,7 @@ const parseObjext = (data: any) => {
 export const useGet = async <T>(url: string) => {
   const resp = useFetch(url, { immediate: false }).get().json<ResultVO<T>>()
   await resp.execute(true)
-  return resp
+  return resp.data.value?.data
 }
 //`immediate: false` 表示不立即执行请求
 export const usePost = async <T>(url: string, data: unknown) => {
@@ -75,15 +75,15 @@ export const usePost = async <T>(url: string, data: unknown) => {
 export const usePut = async <T>(url: string) => {
   const resp = useFetch(url, { immediate: false }).put().json<ResultVO<T>>()
   await resp.execute(true)
-  return resp
+  return resp.data.value?.data
 }
 export const usePatch = async <T>(url: string, data: unknown) => {
   const resp = useFetch(url, { immediate: false }).patch(data).json<ResultVO<T>>()
   await resp.execute(true)
-  return resp
+  return resp.data.value?.data
 }
 export const useDelete = async <T>(url: string) => {
   const resp = useFetch(url, { immediate: false }).delete().json<ResultVO<T>>()
   await resp.execute(true)
-  return resp
+  return resp.data.value?.data
 }

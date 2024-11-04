@@ -79,7 +79,7 @@ const collectPS = (pses: ProcessScore[]) => {
     let temp = 0
     stuD.psTeachers = []
     stuD.averageScore = temp
-
+    console.log(pses)
     const teacherPSs = pses.filter((ps) => ps.studentId == stuD.student?.id)
     if (!teacherPSs) return
 
@@ -123,7 +123,7 @@ watch(
   (newVal) => {
     if (newVal) {
       levelCount.value.len = newVal.length
-      collectPS(result[1]?.data as ProcessScore[])
+      collectPS(result[1] as ProcessScore[])
     }
   },
   { immediate: true }

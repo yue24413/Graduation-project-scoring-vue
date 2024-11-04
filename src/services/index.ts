@@ -21,7 +21,7 @@ export class CommonService {
     token && sessionStorage.setItem('token', token)
     const role = resp.response.value?.headers.get('role')
     role && sessionStorage.setItem('role', role)
-    role && useUserStore().setUserSessionStorage(resp.data.value as User, role)
+    role && useUserStore().setUserSessionStorage(resp.data.value?.data as User, role)
     const name = useUserStore().userS.value?.name
     if (token) {
       // 显示成功消息
@@ -47,8 +47,8 @@ export class CommonService {
   static async listProcessesService() {
     if (!indexStores.ProcessesTypesStore().Processes.value) {
       const data = await useGet<Process[]>('processes')
-      indexStores.ProcessesTypesStore().Processes.value = data.data.value!
+      indexStores.ProcessesTypesStore().Processes.value = data
     }
-    return indexStores.ProcessesTypesStore().Processes.value?.data
+    return indexStores.ProcessesTypesStore().Processes.value
   }
 }
