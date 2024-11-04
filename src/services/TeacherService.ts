@@ -4,6 +4,8 @@ import { teacherStores } from '@/store/TeacherStores'
 import type { ProcessFile, ProcessScore, Progress, User } from '@/type'
 import type { Ref } from 'vue'
 import { ref } from 'vue'
+import { StoreCache, StoreMapCache } from './Decorators'
+
 const TEACHER = 'teacher'
 export class TeacherService {
   //全部学生
@@ -12,41 +14,24 @@ export class TeacherService {
     return data as unknown as Ref<User[]>
   }
   //基于当前组打分
+  @StoreCache(teacherStores.ListGroupStudentsStore.studentsS)
   static async listGroupStudentsService() {
-    if (!teacherStores.ListGroupStudentsStore.studentsS.value) {
-      const data = await useGet<User[]>(`teacher/students/group`)
-      teacherStores.ListGroupStudentsStore.studentsS.value = data
-    }
-    console.log(teacherStores.ListGroupStudentsStore.studentsS.value)
-    return teacherStores.ListGroupStudentsStore.studentsS.value
+    const data = await useGet<User[]>(`teacher/students/group`)
+    return data as unknown as Ref<User[]>
   }
   //基于导师所带学生组打分
-  // @StoreCache(teacherStores.ListTutorStudentsStore.studentsS)
+  @StoreCache(teacherStores.ListTutorStudentsStore.studentsS)
   static async listTutorStudentsService() {
-    if (!teacherStores.ListTutorStudentsStore.studentsS.value) {
-      const data = await useGet<User[]>(`teacher/students/tutor`)
-      teacherStores.ListTutorStudentsStore.studentsS.value = data
-    }
-    // const data = await useGet<User[]>(`teacher/students/tutor`)
-    return teacherStores.ListTutorStudentsStore.studentsS.value
-    // return data.data.value?.data
+    const data = await useGet<User[]>(`teacher/students/tutor`)
+    return data as unknown as Ref<User[]>
   }
   //某个过程的评分
+  @StoreMapCache(teacherStores.ListProcessesProcessScoresStore.processScoresMap)
   static async listProcessesProcessScoresService(pid: string, auth: string) {
-    console.log('pid: ' + pid)
-    const exists = teacherStores.ListProcessesProcessScoresStore.getProcessResult(pid)
-    if (!exists) {
-      const prop = await useGet<ProcessScore[]>(`teacher/processes/${pid}/types/${auth}`)
-      console.log('useGet<ProcessScore>')
-      console.log(prop)
-      // 检查数据是否存在
-      if (prop) {
-        // 将获取到的数据直接存储在 Map 中
-        teacherStores.ListProcessesProcessScoresStore.setProcessResult(pid, prop)
-      }
-    }
-    return teacherStores.ListProcessesProcessScoresStore.getProcessResult(pid)
+    const prop = await useGet<ProcessScore[]>(`teacher/processes/${pid}/types/${auth}`)
+    return prop as unknown as Ref<ProcessScore[]>
   }
+
   //
   static async listPorcessFilesService(pid: string, auth: string) {
     const data = await useGet<ProcessFile[]>(`teacher/processfiles/${pid}/types/${auth}`)

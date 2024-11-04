@@ -19,22 +19,8 @@ const AddPorcessScoreStore = createGlobalState(() => {
 })()
 
 const ListProcessesProcessScoresStore = createGlobalState(() => {
-  const processScoresMap = ref(new Map<string, ProcessScore[]>())
-  // 添加或更新数据
-  const setProcessResult = (pid: string, scores: ProcessScore[]) => {
-    processScoresMap.value.set(pid, scores)
-  }
-
-  // 获取数据
-  const getProcessResult = (pid: string): ProcessScore[] | undefined => {
-    return processScoresMap.value.get(pid)
-  }
-
-  return {
-    processScoresMap,
-    setProcessResult,
-    getProcessResult
-  }
+  const processScoresMap = ref<Map<string, ProcessScore[]>>(new Map())
+  return { processScoresMap }
 })()
 export const teacherStores = {
   ListGroupStudentsStore,

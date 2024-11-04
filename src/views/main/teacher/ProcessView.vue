@@ -9,45 +9,34 @@ import type {
   PSDetailTeacher,
   ProcessFile,
   ProcessScore,
-  ResultVO,
   Student,
   StudentProcessScore,
   User
 } from '@/type/index'
 
-import { computed, defineAsyncComponent, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
-const userStore = useUserStore()
-const route = useRoute()
-console.log(route)
 
-const userS = userStore.userS.value as ResultVO<User>
+const userStore = useUserStore()
+const userS = userStore.userS
+const params = useRoute().params as { pid: string; auth: string }
 //从地址中得到过程id以及过程身份
-const params = ref<{ pid: string; auth: string }>(
-  useRoute().params as { pid: string; auth: string }
-)
-// console.log(params)
-watch(route, (newVal) => {
-  params.value = newVal.params as { pid: string; auth: string }
-  // console.log(params.value)
-})
 
 //result数组封装各个功能
 const result = await Promise.all([
-  params.value.auth == PA_REVIEW
+  params.auth == PA_REVIEW
     ? TeacherService.listGroupStudentsService()
     : TeacherService.listTutorStudentsService(),
 
   //1 通过pid和auth双重 得到点击的某个过程
-  TeacherService.listProcessesProcessScoresService(params.value.pid, params.value.auth),
+  TeacherService.listProcessesProcessScoresService(params.pid, params.auth),
   //2 File
-  TeacherService.listPorcessFilesService(params.value.pid, params.value.auth),
+  TeacherService.listPorcessFilesService(params.pid, params.auth),
   //3 导航
   CommonService.listProcessesService()
 ])
 
-const studentsS = ref<User[]>()
-studentsS.value = result[0]
+const studentsS = result[0]
 const processesS = result[3]
 const levelCount = ref<LevelCount>({
   score_last: 0,
@@ -55,7 +44,7 @@ const levelCount = ref<LevelCount>({
   score_70: 0,
   score_80: 0,
   score_90: 0,
-  len: studentsS.value?.length || 0
+  len: studentsS?.value.length
 })
 
 /*:data="currentPStudentsR" 表示这个表格将会使用名为 currentPStudentsR 的数据数组作为其数据源。这个数组中的每个元素通常代表一行数据，而每一行数据中的键（key）则会对应表格中的列。 */
@@ -70,7 +59,7 @@ const collectPS = (pses: ProcessScore[]) => {
     score_90: 0,
     len: studentsS.value?.length || 0
   }
-  // console.log(levelCount.value)
+  console.log(pses)
   currentPStudentsR.value = []
   studentsS.value?.forEach((s) => {
     const stuD: StudentProcessScore = {}
@@ -79,7 +68,6 @@ const collectPS = (pses: ProcessScore[]) => {
     let temp = 0
     stuD.psTeachers = []
     stuD.averageScore = temp
-    console.log(pses)
     const teacherPSs = pses.filter((ps) => ps.studentId == stuD.student?.id)
     if (!teacherPSs) return
 
@@ -96,9 +84,9 @@ const collectPS = (pses: ProcessScore[]) => {
       }
       //塞得分
       stuD.psTeachers?.push(psTeacher)
-      if (!userS) return
+      if (!userS.value) return
       //判断是不是当前登录的user
-      if (ps.teacherId == userS.data?.id) {
+      if (ps.teacherId == userS.value.id) {
         stuD.currentTeacherScore = psDetail.score
       }
       stuD.psTeachers?.length! > 0 && (stuD.averageScore = temp / stuD.psTeachers?.length!)
@@ -118,19 +106,11 @@ const collectPS = (pses: ProcessScore[]) => {
     })
   })
 }
-watch(
-  studentsS,
-  (newVal) => {
-    if (newVal) {
-      levelCount.value.len = newVal.length
-      collectPS(result[1] as ProcessScore[])
-    }
-  },
-  { immediate: true }
-)
-// console.log(levelCount.value)
+console.log(result[1].value)
+
+collectPS(result[1].value || [])
 /********* */
-const currentProcessAttach = processesS?.find((ps) => ps.id == params.value.pid)?.studentAttach
+const currentProcessAttach = processesS?.find((ps) => ps.id == params.pid)?.studentAttach
 
 const processFilesR = ref<ProcessFile[]>()
 processFilesR.value = result[2]
@@ -150,7 +130,6 @@ const clickAttachF = async (sid: string, number: number) => {
 //评分
 const gradingDialog = defineAsyncComponent(() => import('./GradingDialog.vue'))
 const gradingDialogVisable = ref(false)
-console.log(gradingDialogVisable)
 const currentStudentR = ref<StudentProcessScore>()
 const gradeF = (s: StudentProcessScore) => {
   gradingDialogVisable.value = true
