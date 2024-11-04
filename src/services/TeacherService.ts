@@ -26,7 +26,7 @@ export class TeacherService {
     return data as unknown as Ref<User[]>
   }
   //某个过程的评分
-  @
+  @ELLoading()
   @StoreMapCache(teacherStores.ListProcessesProcessScoresStore.processScoresMap)
   static async listProcessesProcessScoresService(pid: string, auth: string) {
     const prop = await useGet<ProcessScore[]>(`teacher/processes/${pid}/types/${auth}`)
