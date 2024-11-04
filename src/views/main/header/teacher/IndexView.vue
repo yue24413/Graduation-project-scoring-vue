@@ -16,8 +16,6 @@ processesS!.forEach((ps) => {
   menus.push({ name: ps.name!, path: `/teacher/processes/${ps.id}/types/${ps.auth}` })
 })
 const route = useRoute()
-console.log(route.params)
-console.log(menus)
 const activeIndexR = ref('')
 watch(
   route,

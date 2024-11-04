@@ -1,3 +1,4 @@
+import type { ProcessScore } from '@/type/index'
 import type { Ref } from 'vue'
 import { ref } from 'vue'
 /**
@@ -44,14 +45,33 @@ export function StoreMapCache(dataR: Ref<Map<any, any>>, indexs?: number[]) {
       }
       const mapValue = val.get(mapKey)
       if (Object.prototype.toString.call(val) === '[object Map]' && mapValue) {
-        console.log('map-descriptor-store-get')
+        // console.log('map-descriptor-store-get')
         return Promise.resolve(mapValue)
       }
-      console.log('map-descriptor-useGet-get')
+      // console.log('map-descriptor-useGet-get')
       const r = await originalMethod.apply(descriptor, args)
       const refR = ref(r) // 将结果转换为 Ref
       val.set(mapKey, refR)
       return val.get(mapKey)
+    }
+    return descriptor
+  }
+}
+
+export function StoreClear(dataR: Ref<Map<any, any>>) {
+  return (_: any, __: string, descriptor: PropertyDescriptor) => {
+    const originalMethod = descriptor.value
+    descriptor.value = async (...args: any[]) => {
+      const val = dataR.value
+      const mapKey = args.slice(0, 2).join('-')
+      const mapValue = val.get(mapKey)
+      if (Object.prototype.toString.call(val) === '[object Map]' && mapValue) {
+        // 清除指定键的内容
+        val.delete(mapKey)
+      }
+      const r = await originalMethod.apply(descriptor, args)
+      val.set(mapKey, r)
+      return val.get(mapKey) as Ref<ProcessScore[]>
     }
     return descriptor
   }

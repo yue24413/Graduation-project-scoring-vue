@@ -4,7 +4,7 @@ import { teacherStores } from '@/store/TeacherStores'
 import type { ProcessFile, ProcessScore, Progress, User } from '@/type'
 import type { Ref } from 'vue'
 import { ref } from 'vue'
-import { StoreCache, StoreMapCache } from './Decorators'
+import { StoreCache, StoreClear, StoreMapCache } from './Decorators'
 
 const TEACHER = 'teacher'
 export class TeacherService {
@@ -32,6 +32,15 @@ export class TeacherService {
     return prop as unknown as Ref<ProcessScore[]>
   }
 
+  //添加评分
+  @StoreClear(teacherStores.ListProcessesProcessScoresStore.processScoresMap)
+  @StoreMapCache(teacherStores.ListProcessesProcessScoresStore.processScoresMap, [0, 1])
+  static async addPorcessScoreService(pid: string, auth: string, ps: ProcessScore) {
+    ps.detail = JSON.stringify(ps.detail)
+    const prop = await usePost<ProcessScore[]>(`${TEACHER}/processscores/types/${auth}`, ps)
+    return prop.data.value?.data as unknown as Ref<ProcessScore[]>
+  }
+
   //
   static async listPorcessFilesService(pid: string, auth: string) {
     const data = await useGet<ProcessFile[]>(`teacher/processfiles/${pid}/types/${auth}`)
@@ -46,14 +55,5 @@ export class TeacherService {
     })
     const progNotiF = createProgressNotification(progressR.value)
     const resp = await useGet(`teacher/download/${pname}`)
-  }
-
-  //添加评分
-  static addPorcessScoreService = async (ps: ProcessScore, auth: string) => {
-    if (!teacherStores.AddPorcessScoreStore.PorcessScoreS.value) {
-      const data = await usePost<ProcessScore[]>(`${TEACHER}/processscores/types/${auth}`, ps)
-      teacherStores.AddPorcessScoreStore.PorcessScoreS.value = data
-    }
-    return teacherStores.AddPorcessScoreStore.PorcessScoreS.value
   }
 }

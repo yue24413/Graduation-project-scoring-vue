@@ -12,12 +12,6 @@ const ListTutorStudentsStore = createGlobalState(() => {
   const studentsS = ref<User[]>()
   return { studentsS }
 })()
-
-const AddPorcessScoreStore = createGlobalState(() => {
-  const PorcessScoreS = ref<ProcessScore[]>()
-  return { PorcessScoreS }
-})()
-
 const ListProcessesProcessScoresStore = createGlobalState(() => {
   const processScoresMap = ref<Map<string, ProcessScore[]>>(new Map())
   return { processScoresMap }
@@ -25,6 +19,5 @@ const ListProcessesProcessScoresStore = createGlobalState(() => {
 export const teacherStores = {
   ListGroupStudentsStore,
   ListTutorStudentsStore,
-  AddPorcessScoreStore,
   ListProcessesProcessScoresStore
 }

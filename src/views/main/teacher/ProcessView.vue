@@ -20,9 +20,6 @@ import { useRoute } from 'vue-router'
 const userStore = useUserStore()
 const userS = userStore.userS
 const params = useRoute().params as { pid: string; auth: string }
-//从地址中得到过程id以及过程身份
-
-//result数组封装各个功能
 const result = await Promise.all([
   params.auth == PA_REVIEW
     ? TeacherService.listGroupStudentsService()
@@ -30,7 +27,6 @@ const result = await Promise.all([
 
   //1 通过pid和auth双重 得到点击的某个过程
   TeacherService.listProcessesProcessScoresService(params.pid, params.auth),
-  //2 File
   TeacherService.listPorcessFilesService(params.pid, params.auth),
   //3 导航
   CommonService.listProcessesService()
@@ -59,7 +55,6 @@ const collectPS = (pses: ProcessScore[]) => {
     score_90: 0,
     len: studentsS.value?.length || 0
   }
-  console.log(pses)
   currentPStudentsR.value = []
   studentsS.value?.forEach((s) => {
     const stuD: StudentProcessScore = {}
@@ -106,8 +101,6 @@ const collectPS = (pses: ProcessScore[]) => {
     })
   })
 }
-console.log(result[1].value)
-
 collectPS(result[1].value || [])
 /********* */
 const currentProcessAttach = processesS?.find((ps) => ps.id == params.pid)?.studentAttach
@@ -135,7 +128,12 @@ const gradeF = (s: StudentProcessScore) => {
   gradingDialogVisable.value = true
   currentStudentR.value = s
 }
-const addProcessScoreF = (ps: ProcessScore) => {}
+const addProcessScoreF = async (ps: ProcessScore) => {
+  const result = await TeacherService.addPorcessScoreService(params.pid, params.auth, ps)
+  //新分数重新计算
+  collectPS(result.value)
+}
+
 const closeF = () => (gradingDialogVisable.value = false)
 </script>
 <template>
@@ -204,7 +202,10 @@ const closeF = () => (gradingDialogVisable.value = false)
           </el-table-column>
           <el-table-column label="评分/平均分">
             <template #default="scope">
-              {{ scope.row.currentTeacherScore }} / {{ scope.row.averageScore }}
+              {{ scope.row.currentTeacherScore }} /
+              <el-text type="primary" size="large">
+                {{ scope.row.averageScore }}
+              </el-text>
               <br />
               <span v-for="(t, index) of scope.row.psTeachers" :key="index">
                 {{ t.teacherName }};
