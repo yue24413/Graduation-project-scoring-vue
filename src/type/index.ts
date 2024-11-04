@@ -95,8 +95,3 @@ export interface ResultVO<T> {
   message?: string
   data?: T
 }
-// 定义存储类型
-export interface ProcessResult<T> {
-  processId: string
-  result: ResultVO<T>
-}
