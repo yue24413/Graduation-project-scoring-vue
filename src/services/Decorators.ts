@@ -1,3 +1,4 @@
+import { createElLoading } from '@/components/loading/index'
 import type { ProcessScore } from '@/type/index'
 import type { Ref } from 'vue'
 import { ref } from 'vue'
@@ -72,6 +73,23 @@ export function StoreClear(dataR: Ref<Map<any, any>>) {
       const r = await originalMethod.apply(descriptor, args)
       val.set(mapKey, r)
       return val.get(mapKey) as Ref<ProcessScore[]>
+    }
+    return descriptor
+  }
+}
+
+export function ELLoading() {
+  return (_: any, __: string, descriptor: PropertyDescriptor) => {
+    const originalMethod = descriptor.value
+    descriptor.value = async (...args: any[]) => {
+      let r
+      const loading = createElLoading()
+      try {
+        r = await originalMethod.apply(descriptor, args)
+      } finally {
+        loading.close()
+      }
+      return r
     }
     return descriptor
   }

@@ -4,7 +4,7 @@ import { teacherStores } from '@/store/TeacherStores'
 import type { ProcessFile, ProcessScore, Progress, User } from '@/type'
 import type { Ref } from 'vue'
 import { ref } from 'vue'
-import { StoreCache, StoreClear, StoreMapCache } from './Decorators'
+import { ELLoading, StoreCache, StoreClear, StoreMapCache } from './Decorators'
 
 const TEACHER = 'teacher'
 export class TeacherService {
@@ -26,6 +26,7 @@ export class TeacherService {
     return data as unknown as Ref<User[]>
   }
   //某个过程的评分
+  @
   @StoreMapCache(teacherStores.ListProcessesProcessScoresStore.processScoresMap)
   static async listProcessesProcessScoresService(pid: string, auth: string) {
     const prop = await useGet<ProcessScore[]>(`teacher/processes/${pid}/types/${auth}`)
@@ -33,6 +34,7 @@ export class TeacherService {
   }
 
   //添加评分
+  @ELLoading()
   @StoreClear(teacherStores.ListProcessesProcessScoresStore.processScoresMap)
   @StoreMapCache(teacherStores.ListProcessesProcessScoresStore.processScoresMap, [0, 1])
   static async addPorcessScoreService(pid: string, auth: string, ps: ProcessScore) {

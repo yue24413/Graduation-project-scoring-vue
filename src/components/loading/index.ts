@@ -1,7 +1,8 @@
-export const createElLoading = (msg: string = 'Loading') => {
+import { ElLoading } from 'element-plus'
+export const createElLoading = () => {
   return ElLoading.service({
     lock: true,
-    text: msg,
+    text: 'Loading',
     background: 'rgba(0, 0, 0, 0.7)'
   })
 }
