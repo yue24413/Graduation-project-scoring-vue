@@ -2,33 +2,30 @@
 import { CommonService } from '@/services'
 import { PA_REVIEW } from '@/services/Const'
 import { TeacherService } from '@/services/TeacherService'
-import { useUserStore } from '@/store/UserStore'
+import { useUserStore } from '@/stores/UserStore'
 import type {
   LevelCount,
   PSDetail,
   PSDetailTeacher,
-  ProcessFile,
   ProcessScore,
   Student,
   StudentProcessScore,
   User
-} from '@/type/index'
+} from '@/types/index'
 
-import { computed, defineAsyncComponent, ref } from 'vue'
+import { defineAsyncComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const userStore = useUserStore()
 const userS = userStore.userS
 const params = useRoute().params as { pid: string; auth: string }
+
 const result = await Promise.all([
   params.auth == PA_REVIEW
     ? TeacherService.listGroupStudentsService()
     : TeacherService.listTutorStudentsService(),
-
-  //1 通过pid和auth双重 得到点击的某个过程
-  TeacherService.listProcessesProcessScoresService(params.pid, params.auth),
+  TeacherService.listProcessScoresService(params.pid, params.auth),
   TeacherService.listPorcessFilesService(params.pid, params.auth),
-  //3 导航
   CommonService.listProcessesService()
 ])
 
@@ -102,23 +99,23 @@ const collectPS = (pses: ProcessScore[]) => {
     })
   })
 }
-collectPS(result[1].value || [])
+collectPS(result[1].value)
 /********* */
-const currentProcessAttach = processesS?.find((ps) => ps.id == params.pid)?.studentAttach
+// const currentProcessAttach = processesS.value.find((ps) => ps.id == params.pid)?.studentAttach
 
-const processFilesR = ref<ProcessFile[]>()
-processFilesR.value = result[2]
+// const processFilesR = ref<ProcessFile[]>()
+// processFilesR.value = result[2]
 
-const processFileC = computed(
-  () => (sid: string, number: number) =>
-    processFilesR.value?.find((pf) => pf.studentId == sid && pf.number == number)
-)
-const clickAttachF = async (sid: string, number: number) => {
-  const pname = processFilesR.value?.find(
-    (pf) => pf.studentId == sid && pf.number == number
-  )?.detail
-  pname && (await TeacherService.getProcessFileService(pname))
-}
+// const processFileC = computed(
+//   () => (sid: string, number: number) =>
+//     processFilesR.value?.find((pf) => pf.studentId == sid && pf.number == number)
+// )
+// const clickAttachF = async (sid: string, number: number) => {
+//   const pname = processFilesR.value?.find(
+//     (pf) => pf.studentId == sid && pf.number == number
+//   )?.detail
+//   pname && (await TeacherService.getProcessFileService())
+// }
 
 /********************* */
 //评分

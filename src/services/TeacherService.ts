@@ -1,61 +1,87 @@
-import { createProgressNotification } from '@/components/progress'
 import { useGet, usePost } from '@/fetch'
-import { teacherStores } from '@/store/TeacherStores'
-import type { ProcessFile, ProcessScore, Progress, User } from '@/type'
+import { useInfosStore } from '@/stores/InfosStore'
+import { useProcessInfosStore } from '@/stores/ProcessInfosStore'
+import { useProcessStore } from '@/stores/ProcessStore'
+import { useUsersStore } from '@/stores/UsersStore'
+import type { ProcessFile, ProcessScore, User } from '@/types'
 import type { Ref } from 'vue'
-import { ref } from 'vue'
 import { ELLoading, StoreCache, StoreClear, StoreMapCache } from './Decorators'
-
 const TEACHER = 'teacher'
-export class TeacherService {
-  //全部学生
-  static async listStudentsService() {
-    const data = await useGet<User[]>(`teacher/students`)
-    return data as unknown as Ref<User[]>
-  }
-  //基于当前组打分
-  @StoreCache(teacherStores.ListGroupStudentsStore.studentsS)
-  static async listGroupStudentsService() {
-    const data = await useGet<User[]>(`teacher/students/group`)
-    return data as unknown as Ref<User[]>
-  }
-  //基于导师所带学生组打分
-  @StoreCache(teacherStores.ListTutorStudentsStore.studentsS)
-  static async listTutorStudentsService() {
-    const data = await useGet<User[]>(`teacher/students/tutor`)
-    return data as unknown as Ref<User[]>
-  }
-  //某个过程的评分
-  @ELLoading()
-  @StoreMapCache(teacherStores.ListProcessesProcessScoresStore.processScoresMap)
-  static async listProcessesProcessScoresService(pid: string, auth: string) {
-    const prop = await useGet<ProcessScore[]>(`teacher/processes/${pid}/types/${auth}`)
-    return prop as unknown as Ref<ProcessScore[]>
-  }
 
-  //添加评分
-  @ELLoading()
-  @StoreClear(teacherStores.ListProcessesProcessScoresStore.processScoresMap)
-  @StoreMapCache(teacherStores.ListProcessesProcessScoresStore.processScoresMap, [0, 1])
-  static async addPorcessScoreService(pid: string, auth: string, ps: ProcessScore) {
-    ps.detail = JSON.stringify(ps.detail)
-    const prop = await usePost<ProcessScore[]>(`${TEACHER}/processscores/types/${auth}`, ps)
-    return prop.data.value?.data as unknown as Ref<ProcessScore[]>
+const infosStore = useInfosStore()
+const processInfosStore = useProcessInfosStore()
+const processStore = useProcessStore()
+const usersStore = useUsersStore()
+
+export class TeacherService {
+  // 获取指导学生
+  @StoreCache(infosStore.tutortudentsS)
+  static async listTutorStudentsService() {
+    const data = await useGet<User[]>(`${TEACHER}/students/tutor`)
+    return data as unknown as Ref<User[]>
   }
 
   //
+  @StoreCache(infosStore.groupStudentsS)
+  static async listGroupStudentsService() {
+    const data = await useGet<User[]>(`${TEACHER}/students/group`)
+    return data as unknown as Ref<User[]>
+  }
+
+  //
+  @StoreCache(infosStore.groupTeachersS)
+  static async listGroupTeachersService() {
+    const data = await useGet<User[]>(`${TEACHER}/teachers/group`)
+    return data as unknown as Ref<User[]>
+  }
+
+  // 加载指定过程评分
+  @StoreMapCache(processInfosStore.processScoresMapS)
+  @ELLoading()
+  static async listProcessScoresService(pid: string, auth: string) {
+    const data = await useGet<ProcessScore[]>(`${TEACHER}/processes/${pid}/types/${auth}`)
+    return data as unknown as Ref<ProcessScore[]>
+  }
+
+  // 添加评分
+  @ELLoading()
+  @StoreClear(processInfosStore.clear)
+  @StoreMapCache(processInfosStore.processScoresMapS, [0, 1])
+  static async addPorcessScoreService(pid: string, auth: string, ps: ProcessScore) {
+    // @ts-ignore
+    ps.detail = JSON.stringify(ps.detail)
+    const data = await usePost<ProcessScore[]>(`${TEACHER}/processscores/types/${auth}`, ps)
+    return data.data.value?.data as unknown as Ref<ProcessScore[]>
+  }
+
+  //
+  @StoreMapCache(processInfosStore.porcessFilesMapS)
   static async listPorcessFilesService(pid: string, auth: string) {
-    const data = await useGet<ProcessFile[]>(`teacher/processfiles/${pid}/types/${auth}`)
-    return data
+    return await useGet<ProcessFile[]>(`${TEACHER}/processfiles/${pid}/types/${auth}`)
   }
-  //从服务器下载指定文件，并在下载过程中更新一个进度条通知
-  static getProcessFileService = async (name: string) => {
-    //使用 encodeURIComponent 对文件名进行编码
-    const pname = encodeURIComponent(name)
-    const progressR = ref<{ progress: Progress }>({
-      progress: { percentage: 0, title: name, rate: 0, total: 0, loaded: 0 }
-    })
-    const progNotiF = createProgressNotification(progressR.value)
-    const resp = await useGet(`teacher/download/${pname}`)
+
+  // 获取全部教师
+  @StoreCache(usersStore.allTeachersS)
+  static async listTeachersService() {
+    const data = await useGet<User[]>(`${TEACHER}/teachers`)
+    return data as unknown as Ref<User[]>
   }
+
+  // 获取全部学生评分
+  @StoreCache(processInfosStore.allProcessScoresS)
+  @ELLoading()
+  static async getAllProcessScoresService() {
+    const data = await useGet<ProcessScore[]>(`${TEACHER}/processscores`)
+    return data as unknown as Ref<ProcessScore[]>
+  }
+
+  // 加载小组全部评分
+  @StoreCache(processInfosStore.groupProcessScoresS)
+  @ELLoading()
+  static async listProcessScoresGroupService() {
+    const data = await useGet<ProcessScore[]>(`${TEACHER}/processscores/groups`)
+    return data as unknown as Ref<ProcessScore[]>
+  }
+
+  //
 }

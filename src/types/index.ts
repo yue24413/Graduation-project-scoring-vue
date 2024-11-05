@@ -1,14 +1,16 @@
+export interface Department {
+  id?: string
+  name?: string
+}
 export interface User {
   id?: string
   name?: string
   number?: string
   password?: string
+  groupNumber?: number
   student?: Student
-  teacher?: string
-  description?: string
+  teacher?: Teacher
   departmentId?: string
-  role?: string
-  groupNumber?: string
   insertTime?: string
   updateTime?: string
 }
@@ -18,6 +20,14 @@ export interface Student {
   queueNumber?: number
   projectTitle?: string
 }
+
+export interface Teacher {
+  total?: number
+  A?: number
+  B?: number
+  C?: number
+}
+
 export interface Process {
   id?: string
   name?: string
@@ -27,27 +37,21 @@ export interface Process {
   items?: ProcessItem[]
   departmentId?: string
 }
+
 export interface StudentAttach {
   number?: number
   name?: string
   ext?: string
   description?: string
 }
+
 export interface ProcessItem {
   number?: number
   name?: string
   point?: number
   description?: string
 }
-export interface LevelCount {
-  score_90: number
-  score_80: number
-  score_70: number
-  score_60: number
-  score_last: number
-  len: number
-}
-//过程评分
+
 export interface ProcessScore {
   id?: string
   studentId?: string
@@ -55,11 +59,13 @@ export interface ProcessScore {
   processId?: string
   detail?: PSDetail
 }
+
 export interface PSDetail {
   teacherName?: string
   score?: number
   detail?: { number: number; score: number }[]
 }
+
 export interface PSDetailTeacher {
   processScoreId?: string
   teacherId?: string
@@ -67,7 +73,7 @@ export interface PSDetailTeacher {
   score?: number
   detail?: { number: number; score: number }[]
 }
-//每个学生在某个过程下由某位老师的得分
+
 export interface StudentProcessScore {
   student?: User
   averageScore?: number
@@ -82,7 +88,15 @@ export interface ProcessFile {
   detail?: string
   number?: number
 }
-//加载条
+
+export interface LevelCount {
+  score_90: number
+  score_80: number
+  score_70: number
+  score_60: number
+  score_last: number
+  len: number
+}
 export interface Progress {
   percentage: number
   rate: number
@@ -93,5 +107,5 @@ export interface Progress {
 export interface ResultVO<T> {
   code: number
   message?: string
-  data?: T
+  data: T
 }

@@ -1,4 +1,4 @@
-import type { ResultVO } from '@/type'
+import type { ResultVO } from '@/types'
 import { createFetch } from '@vueuse/core'
 const useFetch = createFetch({
   baseUrl: '/api/', // API 接口

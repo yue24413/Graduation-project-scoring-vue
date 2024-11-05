@@ -2,7 +2,7 @@
 import router from '@/router'
 import { CommonService } from '@/services'
 import { ADMIN, STUDENT, TEACHER } from '@/services/Const'
-import { useUserStore } from '@/store/UserStore'
+import { useUserStore } from '@/stores/UserStore'
 import { defineAsyncComponent, type Component } from 'vue'
 const userS = useUserStore().userS.value
 const role = CommonService.getRole()

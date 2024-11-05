@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CommonService } from '@/services'
 import { useUserStore } from '@/store/UserStore'
-import type { PSDetail, ProcessScore, StudentProcessScore } from '@/type'
+import type { PSDetail, ProcessScore, StudentProcessScore } from '@/types'
 import { computed, ref, toRaw, watch } from 'vue'
 interface Props {
   processId: string
@@ -28,6 +28,7 @@ const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId ==
    * 使用 toRaw 函数将 currentTeacherScore 转换为原始对象，去除其响应式特性。
 使用 JSON.stringify 将原始对象转换为 JSON 字符串。
 使用 JSON.parse 将 JSON 字符串解析为新的对象。
+PSDetailTeacher 包含了所有 PSDetail 所需的属性，并且额外的属性不会引起问题（因为它们都是可选的）。
    */
 const scoreInfoR = ref<ProcessScore>({})
 const psDetailR = ref<PSDetail>({})
@@ -49,6 +50,7 @@ watch(autoScore, () => {
   let temp = 0
   const psDetailTemp = [...psDetailR.value.detail]
   while (psDetailTemp.length > 1) {
+    //Math.random() 生成一个介于 0 和 1 之间的随机浮点数 Math.floor 将浮点数向下取整
     const randomIndex = Math.floor(Math.random() * psDetailTemp.length)
     const psDetail = psDetailTemp[randomIndex]
     const item = processItems.find((pi) => pi.number === psDetail.number)

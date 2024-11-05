@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TeacherService } from '@/services/TeacherService'
-import type { Student } from '@/type'
+import type { Student } from '@/types'
 const studentsR = await TeacherService.listTutorStudentsService()
 // 直接访问scope.row.student.queueNumber和scope.row.student.projectTitle会导致错误，因为这些属性并不存在于字符串上
 </script>

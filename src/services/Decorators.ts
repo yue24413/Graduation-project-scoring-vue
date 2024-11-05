@@ -1,5 +1,4 @@
 import { createElLoading } from '@/components/loading/index'
-import type { ProcessScore } from '@/type/index'
 import type { Ref } from 'vue'
 import { ref } from 'vue'
 /**
@@ -59,20 +58,14 @@ export function StoreMapCache(dataR: Ref<Map<any, any>>, indexs?: number[]) {
   }
 }
 
-export function StoreClear(dataR: Ref<Map<any, any>>) {
+export function StoreClear(...clears: Function[]) {
   return (_: any, __: string, descriptor: PropertyDescriptor) => {
     const originalMethod = descriptor.value
-    descriptor.value = async (...args: any[]) => {
-      const val = dataR.value
-      const mapKey = args.slice(0, 2).join('-')
-      const mapValue = val.get(mapKey)
-      if (Object.prototype.toString.call(val) === '[object Map]' && mapValue) {
-        //移除键值对
-        val.delete(mapKey)
+    descriptor.value = (...args: any[]) => {
+      for (const clear of clears) {
+        clear()
       }
-      const r = await originalMethod.apply(descriptor, args)
-      val.set(mapKey, r)
-      return val.get(mapKey) as Ref<ProcessScore[]>
+      return originalMethod.apply(descriptor, args)
     }
     return descriptor
   }

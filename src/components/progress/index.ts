@@ -1,4 +1,4 @@
-import type { Progress } from '@/type'
+import type { Progress } from '@/types'
 import { ElNotification } from 'element-plus'
 import { h } from 'vue'
 import ProgressVue from './ProgressVue.vue'

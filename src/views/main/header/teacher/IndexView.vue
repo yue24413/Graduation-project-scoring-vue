@@ -1,28 +1,33 @@
 <script setup lang="ts">
-import { CommonService } from '@/services/index'
+import { CommonService } from '@/services'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-const menus = [
-  {
-    name: '学生',
-    path: '/teacher'
-  }
-]
+const menus = ref<{ name: string; path: string }[]>([])
 
 const processesS = await CommonService.listProcessesService()
-// processesS.value = await CommonService.listProcessesService()
-processesS!.forEach((ps) => {
-  menus.push({ name: ps.name!, path: `/teacher/processes/${ps.id}/types/${ps.auth}` })
-})
+watch(
+  processesS,
+  () => {
+    menus.value.length = 0
+    menus.value.push({
+      name: '学生',
+      path: '/teacher'
+    })
+    processesS.value.forEach((ps) => {
+      menus.value.push({ name: ps.name!, path: `/teacher/processes/${ps.id}/types/${ps.auth}` })
+    })
+  },
+  { immediate: true }
+)
+
 const route = useRoute()
 const activeIndexR = ref('')
 watch(
   route,
   () => {
-    const p = menus.find((mn) => mn.path == route.path)
+    const p = menus.value.find((mn) => mn.path == route.path)
     activeIndexR.value = p?.path ?? ''
-    // console.log(p?.path)
   },
   { immediate: true }
 )
@@ -30,9 +35,11 @@ watch(
 <template>
   <el-menu :default-active="activeIndexR" mode="horizontal" router>
     <template v-for="(menu, index) in menus" :key="index">
-      <el-menu-item :index="menu.path">{{ menu.name }}</el-menu-item>
+      <el-menu-item :index="menu.path">
+        {{ menu.name }}
+      </el-menu-item>
     </template>
+    <el-menu-item index="/teacher/scores">小组成绩统计</el-menu-item>
+    <el-menu-item index="/teacher/functions">功能</el-menu-item>
   </el-menu>
-  <!-- <el-menu-item index="/teacher/scores">小组成绩统计</el-menu-item>
-  <el-menu-item index="/teacher/functions">功能</el-menu-item> -->
 </template>

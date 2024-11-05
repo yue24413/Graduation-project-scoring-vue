@@ -35,6 +35,14 @@ const routes: RouteRecordRaw[] = [
             component: () => import('@/views/main/teacher/TutorStudentsView.vue')
           },
           {
+            path: 'scores',
+            component: () => import('@/views/main/teacher/GroupScoringsView.vue')
+          },
+          {
+            path: 'functions',
+            component: () => import('@/views/main/teacher/functions/IndexView.vue')
+          },
+          {
             path: 'processes/:pid/types/:auth',
             component: () => import('@/views/main/teacher/ProcessView.vue')
           }

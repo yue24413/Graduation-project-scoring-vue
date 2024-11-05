@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Progress } from '@/type'
+import type { Progress } from '@/types'
 import { computed } from 'vue'
 const prop = defineProps<{ progress: Progress }>()
 const percentageC = computed(() => Math.round(prop.progress.percentage * 100))

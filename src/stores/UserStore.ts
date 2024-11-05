@@ -1,4 +1,4 @@
-import type { User } from '@/type'
+import type { User } from '@/types'
 import { shallowRef } from 'vue'
 const textCoder = new TextEncoder()
 const textDecoder = new TextDecoder()
