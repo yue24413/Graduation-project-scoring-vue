@@ -67,7 +67,7 @@ export function StoreClear(dataR: Ref<Map<any, any>>) {
       const mapKey = args.slice(0, 2).join('-')
       const mapValue = val.get(mapKey)
       if (Object.prototype.toString.call(val) === '[object Map]' && mapValue) {
-        // 清除指定键的内容
+        //移除键值对
         val.delete(mapKey)
       }
       const r = await originalMethod.apply(descriptor, args)

@@ -33,6 +33,7 @@ const result = await Promise.all([
 ])
 
 const studentsS = result[0]
+console.log(studentsS)
 const processesS = result[3]
 const levelCount = ref<LevelCount>({
   score_last: 0,

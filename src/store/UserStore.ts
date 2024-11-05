@@ -1,5 +1,5 @@
 import type { User } from '@/type'
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 const textCoder = new TextEncoder()
 const textDecoder = new TextDecoder()
 
@@ -26,7 +26,7 @@ const decode = (str: string) => {
 }
 
 const u = sessionStorage.getItem('user')
-const userS = ref<User>()
+const userS = shallowRef<User>()
 u && (userS.value = JSON.parse(decode(u)))
 
 const setUserSessionStorage = (user: User, role: string) => {

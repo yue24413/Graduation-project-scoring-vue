@@ -17,9 +17,11 @@ const processesS = await CommonService.listProcessesService()
 const process = processesS?.find((p) => p.id == props.processId)
 //过程下的具体项
 const processItems = process?.items ?? []
+console.log(props.student)
 
 const userS = useUserStore().userS.value
 const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId == userS?.id)
+
 //先判断当前教师是否评过分
 /**
    * 深拷贝：直接赋值会导致引用共享,会指向同一个对象
