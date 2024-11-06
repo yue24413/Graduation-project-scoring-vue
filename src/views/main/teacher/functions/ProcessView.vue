@@ -15,7 +15,7 @@ const authC = (authVal: string) => {
 }
 </script>
 <template>
-  <el-row>
+  <el-row :gutter="10" style="margin-bottom: 10px">
     <el-col></el-col>
     <el-col>
       <el-table :data="processesS">

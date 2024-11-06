@@ -1,4 +1,4 @@
-import { useGet, usePatch, usePost } from '@/fetch'
+import { useDelete, useGet, usePatch, usePost } from '@/fetch'
 import { useInfosStore } from '@/stores/InfosStore'
 import { useProcessInfosStore } from '@/stores/ProcessInfosStore'
 import { useProcessStore } from '@/stores/ProcessStore'
@@ -92,6 +92,12 @@ export class TeacherService {
     // @ts-ignore
     process.studentAttach = JSON.stringify(process.studentAttach)
     const data = await usePatch<Process[]>(`${TEACHER}/processes`, process)
+    return data as unknown as Ref<Process[]>
+  }
+  //
+  @StoreCache(processStore.processesS, true)
+  static async delProcessService(pid: string) {
+    const data = await useDelete<Process[]>(`${TEACHER}/processes/${pid}`)
     return data as unknown as Ref<Process[]>
   }
 }

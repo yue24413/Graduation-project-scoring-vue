@@ -16,11 +16,13 @@ const delItiemF = (item: ProcessItem) => {
   const index = processItemsR.value.indexOf(item)
   processItemsR.value.splice(index, 1)
 }
-const addItiemF = () => {
+const addItemF = () => {
+  if (!processItemR.value.name || !processItemR.value.point) return
   processItemR.value.number = processItemsR.value.length
   processItemsR.value.push(processItemR.value)
   processItemR.value = {}
   processR.value.items = processItemsR.value
+  console.log(processR.value.items)
 }
 const processAttachR = ref<StudentAttach>({})
 const processAttachsR = ref<StudentAttach[]>(processR.value.studentAttach ?? [])
@@ -29,6 +31,7 @@ const delAttachF = (Attach: StudentAttach) => {
   processAttachsR.value.splice(index, 1)
 }
 const addAttachF = () => {
+  if (!processAttachR.value.name || !processAttachR.value.ext) return
   processAttachR.value.number = processAttachsR.value.length
   processAttachsR.value.push(processAttachR.value)
   processAttachR.value = {}
@@ -55,7 +58,7 @@ const updateProcessF = async () => {
           <el-input v-model="processR.name" placeholder="名称"></el-input>
         </el-col>
         <el-col :span="6">
-          <el-input v-model="processR.point" placeholder="比例"></el-input>
+          <el-input v-model="processR.point" placeholder="比例" type="number"></el-input>
         </el-col>
         <el-col :span="6">
           <el-select>
@@ -75,7 +78,12 @@ const updateProcessF = async () => {
         <el-col :span="6">{{ i.name }}</el-col>
         <el-col :span="6">{{ i.point }}</el-col>
         <el-col :span="6">
-          <el-button circle size="small" :icon="Minus" @click="delItiemF(i)"></el-button>
+          <el-button
+            circle
+            size="small"
+            :icon="Minus"
+            @click="delItiemF(i)"
+            type="danger"></el-button>
         </el-col>
       </el-row>
       <el-row :gutter="10" style="margin-bottom: 10px">
@@ -83,10 +91,10 @@ const updateProcessF = async () => {
           <el-input v-model="processItemR.name" placeholder="项名称"></el-input>
         </el-col>
         <el-col :span="6">
-          <el-input v-model="processItemR.point" placeholder="比例"></el-input>
+          <el-input v-model.number="processItemR.point" placeholder="比例" type="number"></el-input>
         </el-col>
         <el-col :span="6">
-          <el-button circle size="small" :icon="Plus" @click="addItiemF"></el-button>
+          <el-button circle size="small" :icon="Plus" @click="addItemF" type="primary"></el-button>
         </el-col>
       </el-row>
       <el-row :gutter="10" style="margin-bottom: 10px">
@@ -94,19 +102,29 @@ const updateProcessF = async () => {
           <el-col :span="6">{{ a.name }}</el-col>
           <el-col :span="6">{{ a.ext }}</el-col>
           <el-col :span="6">
-            <el-button circle size="small" :icon="Minus" @click="delAttachF(a)"></el-button>
+            <el-button
+              circle
+              size="small"
+              :icon="Minus"
+              type="danger"
+              @click="delAttachF(a)"></el-button>
           </el-col>
         </template>
       </el-row>
       <el-row :gutter="10" style="margin-bottom: 10px">
         <el-col :span="6">
-          <el-input v-model="processAttachR.name" placeholder="学生附件名"></el-input>
+          <el-input v-model.number="processAttachR.name" placeholder="学生附件名"></el-input>
         </el-col>
         <el-col :span="6">
           <el-input v-model="processAttachR.ext" placeholder="文件扩展名  .ppt, .pptx"></el-input>
         </el-col>
         <el-col :span="6">
-          <el-button circle size="small" :icon="Plus" @click="addAttachF"></el-button>
+          <el-button
+            circle
+            size="small"
+            :icon="Plus"
+            @click="addAttachF"
+            type="primary"></el-button>
         </el-col>
       </el-row>
       {{ processR }}
