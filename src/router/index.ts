@@ -17,6 +17,10 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
+        path: 'settings',
+        component: () => import('@/views/main/header/UserSettingView.vue')
+      },
+      {
         path: 'student',
         component: () => import('@/views/main/student/IndexView.vue'),
         meta: {

@@ -29,6 +29,10 @@ export class CommonService {
     if (token) {
       // 显示成功消息
       createNoticeBoard('登录成功!', '欢迎您！' + name)
+      if (user.number === user.password) {
+        router.push('/settings')
+        return
+      }
       let path = ''
       switch (role) {
         case consty.ADMIN:
@@ -51,5 +55,8 @@ export class CommonService {
   static async listProcessesService() {
     const data = await useGet<Process[]>('processes')
     return data as unknown as Ref<Process[]>
+  }
+  static updateSelfPassword = async (pwd: string) => {
+    await usePost('passwords', { password: pwd })
   }
 }

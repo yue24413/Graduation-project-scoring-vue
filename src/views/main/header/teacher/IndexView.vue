@@ -33,13 +33,18 @@ watch(
 )
 </script>
 <template>
-  <el-menu :default-active="activeIndexR" mode="horizontal" router>
+  <el-menu :default-active="activeIndexR" mode="horizontal" router class="my-menu">
     <template v-for="(menu, index) in menus" :key="index">
       <el-menu-item :index="menu.path">
         {{ menu.name }}
       </el-menu-item>
     </template>
     <el-menu-item index="/teacher/scores">小组成绩统计</el-menu-item>
-    <el-menu-item index="/teacher/functions">功能</el-menu-item>
+    <el-menu-item index="/teacher/functions" style="color: #f99909">功能</el-menu-item>
   </el-menu>
 </template>
+<style scoped>
+.my-menu {
+  border-bottom: none;
+}
+</style>
