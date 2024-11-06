@@ -9,7 +9,6 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 const app = createApp(App)
-
 app.use(ElementPlus)
 app.use(router) /**将前面导入的路由实例注入到Vue应用中 */
 app.mount('#app') /**挂载之后，Vue应用就开始控制这个DOM元素， */

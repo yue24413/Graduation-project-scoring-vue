@@ -1,0 +1,59 @@
+<script setup lang="ts">
+import { CommonService } from '@/services'
+import { processAuths } from '@/services/Const'
+import EditProcessVue from '@/views/main/teacher/functions/processes/OperationProcessVue.vue'
+const processesS = await CommonService.listProcessesService()
+const authC = (authVal: string) => {
+  let role = ''
+  processAuths.find((ps) => {
+    role = ps.v == authVal ? ps.name : ''
+    if (role != '') {
+      return role
+    }
+  })
+  return role
+}
+</script>
+<template>
+  <el-row>
+    <el-col></el-col>
+    <el-col>
+      <el-table :data="processesS">
+        <el-table-column type="index" label="#" width="50" />
+        <el-table-column width="150">
+          <template #default="scope">
+            {{ scope.row.name }}
+          </template>
+        </el-table-column>
+        <el-table-column width="100">
+          <template #default="scope">
+            {{ authC(scope.row.auth) }}
+          </template>
+        </el-table-column>
+        <el-table-column width="100">
+          <template #default="scope">{{ scope.row.point }}%</template>
+        </el-table-column>
+        <el-table-column width="130">
+          <template #default="scope">
+            <template v-for="(i, index) of scope.row.items" :key="index">
+              {{ i.name }}-{{ i.point }}%
+            </template>
+          </template>
+        </el-table-column>
+        <el-table-column width="80" />
+        <el-table-column width="150">
+          <template #default="scope">
+            <template v-for="(i, index) of scope.row.studentAttach" :key="index">
+              {{ i.name }} -{{ i.ext }}
+            </template>
+          </template>
+        </el-table-column>
+        <el-table-column width="150">
+          <template #default="scope">
+            <EditProcessVue :process="scope.row" />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-col>
+  </el-row>
+</template>

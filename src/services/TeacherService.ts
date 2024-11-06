@@ -1,9 +1,9 @@
-import { useGet, usePost } from '@/fetch'
+import { useGet, usePatch, usePost } from '@/fetch'
 import { useInfosStore } from '@/stores/InfosStore'
 import { useProcessInfosStore } from '@/stores/ProcessInfosStore'
 import { useProcessStore } from '@/stores/ProcessStore'
 import { useUsersStore } from '@/stores/UsersStore'
-import type { ProcessFile, ProcessScore, User } from '@/types'
+import type { Process, ProcessFile, ProcessScore, User } from '@/types'
 import type { Ref } from 'vue'
 import { ELLoading, StoreCache, StoreClear, StoreMapCache } from './Decorators'
 const TEACHER = 'teacher'
@@ -84,4 +84,14 @@ export class TeacherService {
   }
 
   //
+  //
+  @StoreCache(processStore.processesS, true)
+  static async updateProcessService(process: Process) {
+    // @ts-ignore
+    process.items = JSON.stringify(process.items)
+    // @ts-ignore
+    process.studentAttach = JSON.stringify(process.studentAttach)
+    const data = await usePatch<Process[]>(`${TEACHER}/processes`, process)
+    return data as unknown as Ref<Process[]>
+  }
 }
