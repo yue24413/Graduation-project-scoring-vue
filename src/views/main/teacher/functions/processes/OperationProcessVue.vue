@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Process } from '@/types'
+import { DeleteFilled } from '@element-plus/icons-vue'
 import { createEditProcessDialog } from '.'
 const prop = defineProps<{ process: Process }>()
 </script>
@@ -9,7 +10,7 @@ const prop = defineProps<{ process: Process }>()
       <el-icon><EditPen /></el-icon>
     </el-button>
     <el-button type="danger">
-      <el-icon><DeleteFilled /></el-icon>
+      <el-icon :icon="DeleteFilled"></el-icon>
     </el-button>
   </div>
 </template>

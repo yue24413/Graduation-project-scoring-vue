@@ -17,23 +17,28 @@ const resetPwd = async () => {
 <template>
   <div style="margin: 30px">
     <el-row class="my-row">
-      <el-col :span="8">建议修改默认密码</el-col>
-    </el-row>
-    <el-row class="my-row">
-      <el-col :span="8"><el-input placeholder="password:" v-model="paw.p1"></el-input></el-col>
-    </el-row>
-    <el-row class="my-row">
-      <el-col :span="8"><el-input placeholder="again:" v-model="paw.p2"></el-input></el-col>
-    </el-row>
-    <el-row class="my-row">
+      <el-col :span="8" />
       <el-col :span="8">
-        <el-button :disabled="!paw.p1 && !paw.p2" @click="resetPwd">commit</el-button>
+        建议修改默认密码
+        <br />
+        <br />
+        <el-input placeholder="password:" v-model="paw.p1" class="my-input"></el-input>
+        <br />
+        <el-input placeholder="again:" v-model="paw.p2" class="my-input"></el-input>
+        <br />
+        <el-button :disabled="!paw.p1 && !paw.p2" @click="resetPwd" class="commit">
+          commit
+        </el-button>
       </el-col>
+      <el-col :span="8"></el-col>
     </el-row>
   </div>
 </template>
 <style scoped>
 .my-row {
   margin: 1px;
+}
+.my-input {
+  margin-bottom: 15px;
 }
 </style>
