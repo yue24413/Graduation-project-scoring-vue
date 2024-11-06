@@ -2,6 +2,8 @@
 import { CommonService } from '@/services'
 import { processAuths } from '@/services/Const'
 import EditProcessVue from '@/views/main/teacher/functions/processes/OperationProcessVue.vue'
+import AddProcessVue from './AddProcessVue.vue'
+
 const processesS = await CommonService.listProcessesService()
 const authC = (authVal: string) => {
   let role = ''
@@ -16,7 +18,7 @@ const authC = (authVal: string) => {
 </script>
 <template>
   <el-row :gutter="10" style="margin-bottom: 10px">
-    <el-col></el-col>
+    <el-col><AddProcessVue /></el-col>
     <el-col>
       <el-table :data="processesS">
         <el-table-column type="index" label="#" width="50" />

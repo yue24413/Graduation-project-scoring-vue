@@ -3,7 +3,7 @@ import { useInfosStore } from '@/stores/InfosStore'
 import { useProcessInfosStore } from '@/stores/ProcessInfosStore'
 import { useProcessStore } from '@/stores/ProcessStore'
 import { useUsersStore } from '@/stores/UsersStore'
-import type { Process, ProcessFile, ProcessScore, User } from '@/types'
+import type { Process, ProcessFile, ProcessItem, ProcessScore, StudentAttach, User } from '@/types'
 import type { Ref } from 'vue'
 import { ELLoading, StoreCache, StoreClear, StoreMapCache } from './Decorators'
 const TEACHER = 'teacher'
@@ -98,6 +98,20 @@ export class TeacherService {
   @StoreCache(processStore.processesS, true)
   static async delProcessService(pid: string) {
     const data = await useDelete<Process[]>(`${TEACHER}/processes/${pid}`)
+    return data as unknown as Ref<Process[]>
+  }
+  // 添加过程
+  @StoreCache(processStore.processesS, true)
+  static async addProcessService(ps: Process) {
+    if ((ps.items as ProcessItem[])?.length > 0) {
+      // @ts-ignore
+      ps.items = JSON.stringify(ps.items)
+    }
+    if ((ps.studentAttach as StudentAttach[])?.length > 0) {
+      // @ts-ignore
+      ps.studentAttach = JSON.stringify(ps.studentAttach)
+    }
+    const data = await usePost<Process[]>(`${TEACHER}/processes`, ps)
     return data as unknown as Ref<Process[]>
   }
 }
