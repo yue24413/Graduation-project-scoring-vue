@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import { CommonService } from '@/services'
+import { collectService } from '@/services/collectService'
 import { PA_REVIEW } from '@/services/Const'
 import { TeacherService } from '@/services/TeacherService'
 import { useUserStore } from '@/stores/UserStore'
-import type {
-  LevelCount,
-  PSDetail,
-  PSDetailTeacher,
-  ProcessScore,
-  Student,
-  StudentProcessScore,
-  User
-} from '@/types/index'
+import type { LevelCount, ProcessScore, Student, StudentProcessScore, User } from '@/types/index'
 
 import { defineAsyncComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -30,7 +23,6 @@ const result = await Promise.all([
 ])
 
 const studentsS = result[0]
-console.log(studentsS)
 const processesS = result[3]
 const levelCount = ref<LevelCount>({
   score_last: 0,
@@ -43,63 +35,61 @@ const levelCount = ref<LevelCount>({
 
 /*:data="currentPStudentsR" 表示这个表格将会使用名为 currentPStudentsR 的数据数组作为其数据源。这个数组中的每个元素通常代表一行数据，而每一行数据中的键（key）则会对应表格中的列。 */
 
-const currentPStudentsR = ref<StudentProcessScore[]>([])
-const collectPS = (pses: ProcessScore[]) => {
-  levelCount.value = {
-    score_last: 0,
-    score_60: 0,
-    score_70: 0,
-    score_80: 0,
-    score_90: 0,
-    len: studentsS.value?.length || 0
-  }
-  currentPStudentsR.value = []
-  studentsS.value?.forEach((s) => {
-    const stuD: StudentProcessScore = {}
-    stuD.student = s
-    currentPStudentsR.value.push(stuD)
-    let temp = 0
-    stuD.psTeachers = []
-    stuD.averageScore = temp
-    const teacherPSs = pses.filter((ps) => ps.studentId == stuD.student?.id)
-    if (!teacherPSs) return
+// const currentPStudentsR = ref<StudentProcessScore[]>([])
+// const collectPS = (pses: ProcessScore[]) => {
+//   levelCount.value = {
+//     score_last: 0,
+//     score_60: 0,
+//     score_70: 0,
+//     score_80: 0,
+//     score_90: 0,
+//     len: studentsS?.value.length
+//   }
+//   studentsS.value.forEach((s) => {
+//     const stuD: StudentProcessScore = {}
+//     stuD.student = s
+//     currentPStudentsR.value.push(stuD)
+//     let temp = 0
+//     stuD.psTeachers = []
+//     stuD.averageScore = temp
+//     const teacherPSs = pses.filter((ps) => ps.studentId == stuD.student?.id)
+//     if (!teacherPSs) return
+//     teacherPSs.forEach((ps) => {
+//       const psDetail = ps.detail as PSDetail
+//       psDetail.score && (temp += psDetail.score)
+//       const psTeacher: PSDetailTeacher = {
+//         processScoreId: ps.id,
+//         teacherId: ps.teacherId,
+//         teacherName: psDetail.teacherName,
+//         score: psDetail.score,
+//         detail: psDetail.detail
+//       }
+//       stuD.psTeachers?.push(psTeacher)
+//       if (!userS.value) return
+//       if (ps.teacherId == userS.value.id) {
+//         stuD.currentTeacherScore = psDetail.score
+//       }
+//       stuD.psTeachers?.length! > 0 && (stuD.averageScore = temp / stuD.psTeachers?.length!)
+//       stuD.averageScore = Math.round(stuD.averageScore!)
 
-    //当前循环到的学生 有老师评分
-    teacherPSs.forEach((ps) => {
-      const psDetail = ps.detail as PSDetail
-      psDetail.score && (temp += psDetail.score)
-      const psTeacher: PSDetailTeacher = {
-        processScoreId: ps.id,
-        teacherId: ps.teacherId,
-        teacherName: psDetail.teacherName,
-        score: psDetail.score,
-        detail: psDetail.detail
-      }
-      //塞得分
-      stuD.psTeachers?.push(psTeacher)
-      if (!userS.value) return
-      //判断是不是当前登录的user
-      if (ps.teacherId == userS.value.id) {
-        stuD.currentTeacherScore = psDetail.score
-      }
-      stuD.psTeachers?.length! > 0 && (stuD.averageScore = temp / stuD.psTeachers?.length!)
-      stuD.averageScore = Math.round(stuD.averageScore!)
-
-      if (stuD.averageScore >= 90) {
-        levelCount.value.score_90++
-      } else if (stuD.averageScore >= 80 && stuD.averageScore < 90) {
-        levelCount.value.score_80++
-      } else if (stuD.averageScore >= 70 && stuD.averageScore < 80) {
-        levelCount.value.score_70++
-      } else if (stuD.averageScore >= 60 && stuD.averageScore < 70) {
-        levelCount.value.score_60++
-      } else if (stuD.averageScore < 60) {
-        levelCount.value.score_last++
-      }
-    })
-  })
-}
-collectPS(result[1].value)
+//       if (stuD.averageScore >= 90) {
+//         levelCount.value.score_90++
+//       } else if (stuD.averageScore >= 80 && stuD.averageScore < 90) {
+//         levelCount.value.score_80++
+//       } else if (stuD.averageScore >= 70 && stuD.averageScore < 80) {
+//         levelCount.value.score_70++
+//       } else if (stuD.averageScore >= 60 && stuD.averageScore < 70) {
+//         levelCount.value.score_60++
+//       } else if (stuD.averageScore < 60) {
+//         levelCount.value.score_last++
+//       }
+//     })
+//   })
+// }
+let collectS = collectService(result[1].value, studentsS)
+let cPsS = collectS.currentPStudentsR
+let levelValue = collectS.levelCount
+// collectPS()
 /********* */
 // const currentProcessAttach = processesS.value.find((ps) => ps.id == params.pid)?.studentAttach
 
@@ -129,7 +119,10 @@ const gradeF = (s: StudentProcessScore) => {
 const addProcessScoreF = async (ps: ProcessScore) => {
   const result = await TeacherService.addPorcessScoreService(params.pid, params.auth, ps)
   //新分数重新计算
-  collectPS(result.value)
+  // collectPS(result.value)
+  collectS = collectService(result.value, studentsS)
+  cPsS = collectS.currentPStudentsR
+  levelValue = collectS.levelCount
 }
 
 const closeF = () => (gradingDialogVisable.value = false)
@@ -140,29 +133,29 @@ const closeF = () => (gradingDialogVisable.value = false)
       <el-col>
         <div>
           优秀
-          <el-tag :type="levelCount.score_90 > 0 ? 'success' : 'primary'">
-            {{ levelCount.score_90 }}
+          <el-tag :type="levelValue.score_90 > 0 ? 'success' : 'primary'">
+            {{ levelValue.score_90 }}
           </el-tag>
           ；良好
-          <el-tag :type="levelCount.score_80 > 0 ? 'info' : 'primary'">
-            {{ levelCount.score_80 }}
+          <el-tag :type="levelValue.score_80 > 0 ? 'info' : 'primary'">
+            {{ levelValue.score_80 }}
           </el-tag>
           ；中等
-          <el-tag :type="levelCount.score_70 > 0 ? 'warning' : 'primary'">
-            {{ levelCount.score_70 }}
+          <el-tag :type="levelValue.score_70 > 0 ? 'warning' : 'primary'">
+            {{ levelValue.score_70 }}
           </el-tag>
           ；及格
-          <el-tag :type="levelCount.score_60 > 0 ? 'primary' : 'primary'">
-            {{ levelCount.score_60 }}
+          <el-tag :type="levelValue.score_60 > 0 ? 'primary' : 'primary'">
+            {{ levelValue.score_60 }}
           </el-tag>
           ；不及格
-          <el-tag :type="levelCount.score_last > 0 ? 'danger' : 'primary'">
-            {{ levelCount.score_last }}
+          <el-tag :type="levelValue.score_last > 0 ? 'danger' : 'primary'">
+            {{ levelValue.score_last }}
           </el-tag>
           ；共
-          <el-tag>{{ levelCount.len }}</el-tag>
+          <el-tag>{{ levelValue.len }}</el-tag>
         </div>
-        <el-table :data="currentPStudentsR">
+        <el-table :data="cPsS">
           <el-table-column type="index" label="#" />
           <el-table-column>
             <template #default="scope">

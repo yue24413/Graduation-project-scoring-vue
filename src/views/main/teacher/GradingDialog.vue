@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CommonService } from '@/services'
-import { useUserStore } from '@/store/UserStore'
+import { useUserStore } from '@/stores/UserStore'
 import type { PSDetail, ProcessScore, StudentProcessScore } from '@/types'
 import { computed, ref, toRaw, watch } from 'vue'
 interface Props {
@@ -14,11 +14,10 @@ const dialogVisible = ref(true)
 //需要得到某个过程中的所有子项，动态描述名称以及占比
 const processesS = await CommonService.listProcessesService()
 //得到具体的过程
-const process = processesS?.find((p) => p.id == props.processId)
+const process = processesS.value.find((p) => p.id == props.processId)
 //过程下的具体项
 const processItems = process?.items ?? []
 console.log(props.student)
-
 const userS = useUserStore().userS.value
 const currentTeacherScore = props.student.psTeachers?.find((t) => t.teacherId == userS?.id)
 
@@ -34,6 +33,13 @@ const scoreInfoR = ref<ProcessScore>({})
 const psDetailR = ref<PSDetail>({})
 if (currentTeacherScore) {
   psDetailR.value = JSON.parse(JSON.stringify(toRaw(currentTeacherScore)))
+  if (!psDetailR.value.detail) {
+    psDetailR.value.score = 0
+    psDetailR.value.detail = []
+    processItems.forEach((item) => {
+      psDetailR.value.detail?.push({ score: 0, number: item.number! })
+    })
+  }
 } else {
   psDetailR.value.score = 0
   psDetailR.value.detail = []
@@ -45,6 +51,7 @@ const autoScore = ref(currentTeacherScore?.score ?? 0)
 watch(autoScore, () => {
   const score = autoScore.value
   psDetailR.value.score = score
+  console.log(psDetailR.value.detail)
   if (!psDetailR.value.detail) return
   // 随机数
   let temp = 0

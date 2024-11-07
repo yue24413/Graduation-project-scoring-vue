@@ -17,6 +17,8 @@ export function StoreCache(dataR: Ref<any>, replace = false) {
         return Promise.resolve(dataR)
       }
       const r = await originalMethod.apply(descriptor, args)
+      console.log(r)
+
       return (dataR.value = r) && dataR
     }
     return descriptor

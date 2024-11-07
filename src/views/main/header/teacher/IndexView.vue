@@ -6,6 +6,7 @@ import { useRoute } from 'vue-router'
 const menus = ref<{ name: string; path: string }[]>([])
 
 const processesS = await CommonService.listProcessesService()
+console.log(processesS)
 watch(
   processesS,
   () => {
