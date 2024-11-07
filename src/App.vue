@@ -10,6 +10,7 @@ import LoadingVue from '@/components/loading/LoadingVue.vue'
       <LoadingVue />
     </template>
   </suspense>
+  <el-backtop :right="100" :bottom="100" />
 </template>
 <style>
 * {

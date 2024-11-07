@@ -112,6 +112,6 @@ export class TeacherService {
       ps.studentAttach = JSON.stringify(ps.studentAttach)
     }
     const data = await usePost<Process[]>(`${TEACHER}/processes`, ps)
-    return data as unknown as Ref<Process[]>
+    return data.data.value?.data as unknown as Ref<Process[]>
   }
 }

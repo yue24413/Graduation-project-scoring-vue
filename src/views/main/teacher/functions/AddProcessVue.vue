@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createMessageDialog } from '@/components/message'
+import { createNoticeBoard } from '@/components/Notice'
 import { processAuths } from '@/services/Const'
 import { TeacherService } from '@/services/TeacherService'
 import type { Process, ProcessItem, StudentAttach } from '@/types'
@@ -39,7 +39,7 @@ const delAttachF = (att: StudentAttach) => {
 //
 const addProcessF = async () => {
   await TeacherService.addProcessService(processR.value)
-  createMessageDialog('过程添加成功')
+  createNoticeBoard('过程添加成功', '')
   dialogVisible.value = false
   processR.value = {}
 }
@@ -120,7 +120,7 @@ console.log(processItemsR)
         <el-input placeholder="学生附件名称" v-model="processAttachR.name"></el-input>
       </el-col>
       <el-col :span="6">
-        <el-input placeholder="文件拓展名" v-model="processAttachR.ext"></el-input>
+        <el-input placeholder="文件拓展名 .ppt .pptx" v-model="processAttachR.ext"></el-input>
       </el-col>
       <el-col :span="6">
         <el-button type="primary" circle :icon="Plus" @click="addAttachF"></el-button>
@@ -131,5 +131,6 @@ console.log(processItemsR)
         <span v-if="!pointC" style="color: red">子项分数之和应为100分</span>
       </el-button>
     </el-row>
+    {{ processR }}
   </el-dialog>
 </template>
