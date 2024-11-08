@@ -9,6 +9,14 @@ const components: { name: string; component: Component }[] = [
   {
     name: '导入学生',
     component: defineAsyncComponent(() => import('./ImportStudentView.vue'))
+  },
+  {
+    name: '分配',
+    component: defineAsyncComponent(() => import('./AssignStudentView.vue'))
+  },
+  {
+    name: '分组',
+    component: defineAsyncComponent(() => import('./GroupingView.vue'))
   }
 ]
 
@@ -23,7 +31,7 @@ const typeC = computed(
 <template>
   <el-row class="my-row">
     <el-col :span="1"></el-col>
-    <el-col :span="2">
+    <el-col :span="1">
       <el-tag
         class="my-tag"
         v-for="(com, index) of components"

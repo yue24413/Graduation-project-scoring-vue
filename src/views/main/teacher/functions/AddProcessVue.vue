@@ -14,7 +14,13 @@ const processAttachR = ref<StudentAttach>({})
 const processAttachsR = ref<StudentAttach[]>(processR.value.studentAttach ?? [])
 //
 const addItemF = () => {
-  if (!processItemR.value.name || !processItemR.value.point) return
+  if (
+    !processItemR.value.name ||
+    !processItemR.value.point ||
+    processItemR.value.point < 0 ||
+    processItemR.value.point > 100
+  )
+    return
   processItemR.value.number = processItemsR.value.length
   processItemsR.value.push(processItemR.value)
   processItemR.value = {}

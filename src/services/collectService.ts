@@ -9,18 +9,18 @@ import type {
 } from '@/types/index'
 import type { Ref } from 'vue'
 import { ref } from 'vue'
+const currentPStudentsR = ref<StudentProcessScore[]>([])
+const levelCount = ref<LevelCount>({
+  score_last: 0,
+  score_60: 0,
+  score_70: 0,
+  score_80: 0,
+  score_90: 0,
+  len: 0
+})
 export const collectService = (pses: ProcessScore[], studentsS: Ref<User[]>) => {
-  const currentPStudentsR = ref<StudentProcessScore[]>([])
   const userStore = useUserStore()
   const userS = userStore.userS
-  const levelCount = ref<LevelCount>({
-    score_last: 0,
-    score_60: 0,
-    score_70: 0,
-    score_80: 0,
-    score_90: 0,
-    len: studentsS?.value.length
-  })
   const collectPS = (pses: ProcessScore[]) => {
     levelCount.value = {
       score_last: 0,

@@ -66,7 +66,11 @@ export class TeacherService {
     const data = await useGet<User[]>(`${TEACHER}/teachers`)
     return data as unknown as Ref<User[]>
   }
-
+  @StoreCache(usersStore.allStudentsS)
+  static async listStudentsService() {
+    const data = await useGet<User[]>(`${TEACHER}/students`)
+    return data as unknown as Ref<User[]>
+  }
   // 获取全部学生评分
   @StoreCache(processInfosStore.allProcessScoresS)
   @ELLoading()
@@ -111,7 +115,20 @@ export class TeacherService {
       // @ts-ignore
       ps.studentAttach = JSON.stringify(ps.studentAttach)
     }
+    console.log(ps)
+
     const data = await usePost<Process[]>(`${TEACHER}/processes`, ps)
     return data.data.value?.data as unknown as Ref<Process[]>
+  }
+
+  @StoreCache(usersStore.allStudentsS, true)
+  @ELLoading()
+  static async addStudentsService(students: User[]) {
+    students.forEach((stu) => {
+      //@ts-ignore
+      stu.student && (stu.student = JSON.stringify(stu.student))
+    })
+    const data = await usePost<User[]>(`${TEACHER}/students`, students)
+    return data.data.value?.data as unknown as Ref<User[]>
   }
 }

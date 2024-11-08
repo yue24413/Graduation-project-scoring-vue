@@ -4,7 +4,7 @@ import { collectService } from '@/services/collectService'
 import { PA_REVIEW } from '@/services/Const'
 import { TeacherService } from '@/services/TeacherService'
 import { useUserStore } from '@/stores/UserStore'
-import type { LevelCount, ProcessScore, Student, StudentProcessScore, User } from '@/types/index'
+import type { ProcessScore, Student, StudentProcessScore, User } from '@/types/index'
 
 import { defineAsyncComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -24,89 +24,10 @@ const result = await Promise.all([
 
 const studentsS = result[0]
 const processesS = result[3]
-const levelCount = ref<LevelCount>({
-  score_last: 0,
-  score_60: 0,
-  score_70: 0,
-  score_80: 0,
-  score_90: 0,
-  len: studentsS?.value.length
-})
 
-/*:data="currentPStudentsR" 表示这个表格将会使用名为 currentPStudentsR 的数据数组作为其数据源。这个数组中的每个元素通常代表一行数据，而每一行数据中的键（key）则会对应表格中的列。 */
-
-// const currentPStudentsR = ref<StudentProcessScore[]>([])
-// const collectPS = (pses: ProcessScore[]) => {
-//   levelCount.value = {
-//     score_last: 0,
-//     score_60: 0,
-//     score_70: 0,
-//     score_80: 0,
-//     score_90: 0,
-//     len: studentsS?.value.length
-//   }
-//   studentsS.value.forEach((s) => {
-//     const stuD: StudentProcessScore = {}
-//     stuD.student = s
-//     currentPStudentsR.value.push(stuD)
-//     let temp = 0
-//     stuD.psTeachers = []
-//     stuD.averageScore = temp
-//     const teacherPSs = pses.filter((ps) => ps.studentId == stuD.student?.id)
-//     if (!teacherPSs) return
-//     teacherPSs.forEach((ps) => {
-//       const psDetail = ps.detail as PSDetail
-//       psDetail.score && (temp += psDetail.score)
-//       const psTeacher: PSDetailTeacher = {
-//         processScoreId: ps.id,
-//         teacherId: ps.teacherId,
-//         teacherName: psDetail.teacherName,
-//         score: psDetail.score,
-//         detail: psDetail.detail
-//       }
-//       stuD.psTeachers?.push(psTeacher)
-//       if (!userS.value) return
-//       if (ps.teacherId == userS.value.id) {
-//         stuD.currentTeacherScore = psDetail.score
-//       }
-//       stuD.psTeachers?.length! > 0 && (stuD.averageScore = temp / stuD.psTeachers?.length!)
-//       stuD.averageScore = Math.round(stuD.averageScore!)
-
-//       if (stuD.averageScore >= 90) {
-//         levelCount.value.score_90++
-//       } else if (stuD.averageScore >= 80 && stuD.averageScore < 90) {
-//         levelCount.value.score_80++
-//       } else if (stuD.averageScore >= 70 && stuD.averageScore < 80) {
-//         levelCount.value.score_70++
-//       } else if (stuD.averageScore >= 60 && stuD.averageScore < 70) {
-//         levelCount.value.score_60++
-//       } else if (stuD.averageScore < 60) {
-//         levelCount.value.score_last++
-//       }
-//     })
-//   })
-// }
 let collectS = collectService(result[1].value, studentsS)
 let cPsS = collectS.currentPStudentsR
 let levelValue = collectS.levelCount
-// collectPS()
-/********* */
-// const currentProcessAttach = processesS.value.find((ps) => ps.id == params.pid)?.studentAttach
-
-// const processFilesR = ref<ProcessFile[]>()
-// processFilesR.value = result[2]
-
-// const processFileC = computed(
-//   () => (sid: string, number: number) =>
-//     processFilesR.value?.find((pf) => pf.studentId == sid && pf.number == number)
-// )
-// const clickAttachF = async (sid: string, number: number) => {
-//   const pname = processFilesR.value?.find(
-//     (pf) => pf.studentId == sid && pf.number == number
-//   )?.detail
-//   pname && (await TeacherService.getProcessFileService())
-// }
-
 /********************* */
 //评分
 const gradingDialog = defineAsyncComponent(() => import('./GradingDialog.vue'))

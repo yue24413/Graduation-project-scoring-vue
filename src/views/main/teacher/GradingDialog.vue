@@ -2,7 +2,7 @@
 import { CommonService } from '@/services'
 import { useUserStore } from '@/stores/UserStore'
 import type { PSDetail, ProcessScore, StudentProcessScore } from '@/types'
-import { computed, ref, toRaw, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 interface Props {
   processId: string
   student: StudentProcessScore
@@ -32,7 +32,8 @@ PSDetailTeacher 包含了所有 PSDetail 所需的属性，并且额外的属性
 const scoreInfoR = ref<ProcessScore>({})
 const psDetailR = ref<PSDetail>({})
 if (currentTeacherScore) {
-  psDetailR.value = JSON.parse(JSON.stringify(toRaw(currentTeacherScore)))
+  // psDetailR.value = JSON.parse(JSON.stringify(toRaw(currentTeacherScore)))
+  psDetailR.value = JSON.parse(JSON.stringify(currentTeacherScore))
   if (!psDetailR.value.detail) {
     psDetailR.value.score = 0
     psDetailR.value.detail = []
@@ -62,6 +63,7 @@ watch(autoScore, () => {
     const psDetail = psDetailTemp[randomIndex]
     const item = processItems.find((pi) => pi.number === psDetail.number)
     const result = score * 0.01 * (item?.point ?? 0)
+
     const randomScore = Math.random() > 0.5 ? Math.ceil(result) : Math.floor(result)
     psDetail.score = randomScore
     psDetailTemp.splice(randomIndex, 1)
@@ -97,9 +99,11 @@ const submitF = () => {
   scoreInfoR.value.studentId = props.student.student?.id
   scoreInfoR.value.processId = props.processId
   psDetailR.value.teacherName = userS.name
-  scoreInfoR.value.detail = toRaw(psDetailR.value)
+  // scoreInfoR.value.detail = toRaw(psDetailR.value)
+  scoreInfoR.value.detail = psDetailR.value
   currentTeacherScore && (scoreInfoR.value.id = currentTeacherScore.processScoreId)
-  props.addProcessScore(toRaw(scoreInfoR.value))
+  // props.addProcessScore(toRaw(scoreInfoR.value))
+  props.addProcessScore(scoreInfoR.value)
   props.close()
 }
 //
