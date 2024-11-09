@@ -6,13 +6,16 @@ import type { Process, ProcessItem, StudentAttach } from '@/types'
 import { Check, Minus, Plus } from '@element-plus/icons-vue'
 import { computed, ref } from 'vue'
 
+const prop = defineProps<{ totalScore: number }>()
 const dialogVisible = ref(false)
 const processR = ref<Process>({})
 const processItemR = ref<ProcessItem>({})
 const processItemsR = ref<ProcessItem[]>(processR.value.items ?? [])
 const processAttachR = ref<StudentAttach>({})
 const processAttachsR = ref<StudentAttach[]>(processR.value.studentAttach ?? [])
+
 //
+
 const addItemF = () => {
   if (
     !processItemR.value.name ||
@@ -54,7 +57,9 @@ const pointC = computed(() => {
   processItemsR.value.forEach((i) => i.point && (points = i.point + points))
   return points == 100
 })
-console.log(processItemsR)
+console.log(prop.totalScore)
+
+const Score = computed(() => prop.totalScore + (processR.value.point || 0))
 
 //
 </script>
@@ -133,9 +138,16 @@ console.log(processItemsR)
       </el-col>
     </el-row>
     <el-row>
-      <el-button type="success" :icon="Check" @click="addProcessF" :disabled="!pointC">
-        <span v-if="!pointC" style="color: red">子项分数之和应为100分</span>
+      <el-button
+        type="success"
+        :icon="Check"
+        @click="addProcessF"
+        :disabled="!pointC || Score > 100">
+        <span v-if="!pointC || Score > 100" style="color: red">
+          子项分数之和应为100分 且过程总和小于等于100分
+        </span>
       </el-button>
+      {{ Score }}
     </el-row>
     {{ processR }}
   </el-dialog>

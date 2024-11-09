@@ -6,11 +6,15 @@ import type { Process, ProcessItem, StudentAttach } from '@/types'
 import { Check, Minus, Plus } from '@element-plus/icons-vue'
 import { ElButton, ElCol, ElDialog, ElInput, ElOption, ElRow, ElSelect } from 'element-plus'
 import { computed, ref } from 'vue'
-const prop = defineProps<{ process: Process }>()
+const prop = defineProps<{ process: Process; totalScore: number }>()
 const processR = ref<Process>(JSON.parse(JSON.stringify(prop.process)))
+console.log(prop.totalScore)
+
 const processItemR = ref<ProcessItem>({})
 const processItemsR = ref<ProcessItem[]>(processR.value.items ?? [])
 const dialogTableVisible = ref(true)
+//
+const Score = computed(() => prop.totalScore - prop.process.point! + (processR.value.point || 0))
 const delItiemF = (item: ProcessItem) => {
   //浅拷贝 通过indexOf找
   const index = processItemsR.value.indexOf(item)
@@ -58,7 +62,7 @@ const updateProcessF = async () => {
           <el-input v-model="processR.name" placeholder="名称"></el-input>
         </el-col>
         <el-col :span="6">
-          <el-input v-model="processR.point" placeholder="比例" type="number"></el-input>
+          <el-input v-model.number="processR.point" placeholder="比例" type="number"></el-input>
         </el-col>
         <el-col :span="6">
           <el-select>
@@ -129,9 +133,16 @@ const updateProcessF = async () => {
       </el-row>
       {{ processR }}
       <br />
-      <el-button type="success" :icon="Check" @click="updateProcessF" :disabled="!pointC">
-        <span v-if="!pointC" style="color: red">子项分数之和应为100分</span>
+      <el-button
+        type="success"
+        :icon="Check"
+        @click="updateProcessF"
+        :disabled="!pointC || Score > 100">
+        <span v-if="!pointC || Score > 100" style="color: red">
+          子项分数之和应为100分 且过程总和小于等于100分
+        </span>
       </el-button>
+      {{ Score }}
     </div>
   </el-dialog>
 </template>

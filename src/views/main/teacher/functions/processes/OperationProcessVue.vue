@@ -4,7 +4,7 @@ import { createEditProcessDialog } from '.'
 
 import { TeacherService } from '@/services/TeacherService'
 import { ElMessage, ElMessageBox } from 'element-plus'
-const prop = defineProps<{ process: Process }>()
+const prop = defineProps<{ process: Process; totalScore: number }>()
 const processItemR = prop.process
 const delPorcessF = (pid: string) => {
   ElMessageBox.confirm(`删除${processItemR.name}将不可恢复，确定删除？`, 'Warning', {
@@ -28,13 +28,17 @@ const delPorcessF = (pid: string) => {
       })
     })
 }
+console.log(prop.totalScore)
 </script>
 <template>
   <div>
-    <el-button type="primary" @click="createEditProcessDialog(prop.process)">
+    <el-button type="primary" @click="createEditProcessDialog(prop.process, prop.totalScore)">
       <el-icon><EditPen /></el-icon>
     </el-button>
-    <el-button type="danger" @click="delPorcessF(prop.process.id ?? '')">
+    <el-button
+      type="danger"
+      @click="delPorcessF(prop.process.id ?? '')"
+      :totalScore="prop.totalScore">
       <el-icon><DeleteFilled /></el-icon>
     </el-button>
   </div>
