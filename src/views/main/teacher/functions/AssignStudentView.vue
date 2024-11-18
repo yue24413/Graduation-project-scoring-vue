@@ -20,7 +20,10 @@ const results = await Promise.all([
   TeacherService.listStudentsService()
 ])
 const allTeachersR = results[0]
+console.log(allTeachersR)
 const allStudentsR = results[1]
+console.log(allStudentsR)
+
 let totalA = 0
 let totalC = 0
 
@@ -40,12 +43,27 @@ allTeachersR.value.forEach((ts) => {
   }
   teachersR.value.push(teacher)
 })
-console.log(allStudentsR.value.slice(0, totalA))
+const listA = allStudentsR.value.slice(0, totalA)
+const listB = allStudentsR.value.slice(totalA, allStudentsR.value.length - totalC)
+const listC = allStudentsR.value.slice(
+  allStudentsR.value.length - totalC,
+  allStudentsR.value.length
+)
+const listRandom = (list: User[], level: 'A' | 'B' | 'C') => {}
+const randomF = () => {
+  teachersR.value.forEach((t) => {
+    t.levelA = []
+    t.levelC = []
+    t.levelB = []
+  })
+}
 </script>
 <template>
   <div>
     <el-row class="my-row">
-      <el-col class="my-col" :span="2"><el-button type="primary">随机分配</el-button></el-col>
+      <el-col class="my-col" :span="2">
+        <el-button type="primary" @click="randomF">随机分配</el-button>
+      </el-col>
       <el-col class="my-col" :span="2"><el-button type="success" :icon="Check"></el-button></el-col>
       <el-col class="my-col" :span="2"><el-button type="primary">导出分配表格</el-button></el-col>
     </el-row>

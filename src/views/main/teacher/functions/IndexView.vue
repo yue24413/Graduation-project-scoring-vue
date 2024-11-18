@@ -17,6 +17,10 @@ const components: { name: string; component: Component }[] = [
   {
     name: '分组',
     component: defineAsyncComponent(() => import('./GroupingView.vue'))
+  },
+  {
+    name: 'test1',
+    component: defineAsyncComponent(() => import('./test1.vue'))
   }
 ]
 

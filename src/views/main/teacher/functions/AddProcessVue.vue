@@ -57,8 +57,6 @@ const pointC = computed(() => {
   processItemsR.value.forEach((i) => i.point && (points = i.point + points))
   return points == 100
 })
-console.log(prop.totalScore)
-
 const Score = computed(() => prop.totalScore + (processR.value.point || 0))
 
 //

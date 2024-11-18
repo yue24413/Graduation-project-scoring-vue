@@ -8,8 +8,6 @@ import { ElButton, ElCol, ElDialog, ElInput, ElOption, ElRow, ElSelect } from 'e
 import { computed, ref } from 'vue'
 const prop = defineProps<{ process: Process; totalScore: number }>()
 const processR = ref<Process>(JSON.parse(JSON.stringify(prop.process)))
-console.log(prop.totalScore)
-
 const processItemR = ref<ProcessItem>({})
 const processItemsR = ref<ProcessItem[]>(processR.value.items ?? [])
 const dialogTableVisible = ref(true)
@@ -26,7 +24,6 @@ const addItemF = () => {
   processItemsR.value.push(processItemR.value)
   processItemR.value = {}
   processR.value.items = processItemsR.value
-  console.log(processR.value.items)
 }
 const processAttachR = ref<StudentAttach>({})
 const processAttachsR = ref<StudentAttach[]>(processR.value.studentAttach ?? [])
