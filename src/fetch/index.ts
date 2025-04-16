@@ -1,5 +1,9 @@
 import type { ResultVO } from '@/types'
 import { createFetch } from '@vueuse/core'
+
+// 用于存储每个请求的缓存信息
+const cacheInfo = new Map<string, { etag: string | null; lastModified: string | null }>()
+
 const useFetch = createFetch({
   baseUrl: '/api/', // API 接口
   options: {

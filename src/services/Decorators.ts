@@ -3,6 +3,12 @@ import type { Ref } from 'vue'
 import { ref } from 'vue'
 /**
  *基本装饰器无法满足，用高阶装饰器，返回装饰器函数的函数
+
+Object.prototype.toString不是用于元素拼接等功能，它是专门用于从更高层次上描述对象的类型，不受对象自身可能重定义的toString方法的影响。
+
+ typeof []返回object，不能很好地区分数组和普通对象，而Object.prototype.toString.call可以准确地分辨出数组和普通对象
+
+ 如果直接调用val.toString()，若val是一个自定义对象，它可能已经重定义了自己的toString方法，就无法得到用于判断对象类型的字符串。
  */
 export function StoreCache(dataR: Ref<any>, replace = false) {
   return (_: any, __: string, descriptor: PropertyDescriptor) => {

@@ -1,4 +1,8 @@
 <script setup lang="ts"></script>
 <template>
-  <div>student</div>
+  <RouterView v-slot="{ Component }" :key="$route.fullPath">
+    <KeepAlive>
+      <component :is="Component" />
+    </KeepAlive>
+  </RouterView>
 </template>

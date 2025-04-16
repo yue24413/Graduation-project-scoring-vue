@@ -11,16 +11,28 @@ const components: { name: string; component: Component }[] = [
     component: defineAsyncComponent(() => import('./ImportStudentView.vue'))
   },
   {
-    name: '分配',
+    name: '分配导师',
     component: defineAsyncComponent(() => import('./AssignStudentView.vue'))
   },
   {
-    name: '分组',
+    name: '导入题目',
+    component: defineAsyncComponent(() => import('./ImportStudentsInfoView.vue'))
+  },
+  {
+    name: '分组乱序',
     component: defineAsyncComponent(() => import('./GroupingView.vue'))
   },
   {
-    name: 'test1',
-    component: defineAsyncComponent(() => import('./test1.vue'))
+    name: '重置密码',
+    component: defineAsyncComponent(() => import('./ResetPasswordView.vue'))
+  },
+  {
+    name: '更新用户信息',
+    component: defineAsyncComponent(() => import('./EditUserView.vue'))
+  },
+  {
+    name: '导出详细成绩表格',
+    component: defineAsyncComponent(() => import('./ExportScoresView.vue'))
   }
 ]
 

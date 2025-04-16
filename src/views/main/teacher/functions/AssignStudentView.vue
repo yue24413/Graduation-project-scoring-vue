@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { createNoticeBoard } from '@/components/Notice'
+
 import { TeacherService } from '@/services/TeacherService'
-import type { User } from '@/types/index'
+import type { User } from '@/types'
 import { Check } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+
 interface TeacherTemp {
   id?: string
   name?: string
@@ -14,66 +17,141 @@ interface TeacherTemp {
   levelB?: User[]
   levelC?: User[]
 }
-const teachersR = ref<TeacherTemp[]>([])
 const results = await Promise.all([
   TeacherService.listTeachersService(),
   TeacherService.listStudentsService()
 ])
 const allTeachersR = results[0]
-console.log(allTeachersR)
 const allStudentsR = results[1]
-console.log(allStudentsR)
-
+const studentsTR: User[] = []
+const teachersR = ref<TeacherTemp[]>([])
 let totalA = 0
 let totalC = 0
 
-allTeachersR.value.forEach((ts) => {
-  totalA += ts.teacher?.A || 0
-  totalC += ts.teacher?.C || 0
-  const teacher: TeacherTemp = {
-    id: ts.id,
-    name: ts.name,
-    total: ts.teacher?.total,
-    A: ts.teacher?.A,
-    B: ts.teacher?.total! - (ts.teacher?.A || 0) - (ts.teacher?.C || 0),
-    C: ts.teacher?.C,
+allTeachersR.value.forEach((teach) => {
+  totalA += teach.teacher?.A ?? 0
+  totalC += teach.teacher?.C ?? 0
+  const temp = {
+    id: teach.id,
+    name: teach.name,
+    total: teach.teacher?.total,
+    A: teach.teacher?.A,
+    C: teach.teacher?.C,
+    B: teach.teacher?.total! - teach?.teacher?.A! - teach?.teacher?.C!,
     levelA: [],
     levelB: [],
     levelC: []
   }
-  teachersR.value.push(teacher)
+  teachersR.value.push(temp)
 })
-const listA = allStudentsR.value.slice(0, totalA)
-const listB = allStudentsR.value.slice(totalA, allStudentsR.value.length - totalC)
-const listC = allStudentsR.value.slice(
-  allStudentsR.value.length - totalC,
-  allStudentsR.value.length
-)
-const listRandom = (list: User[], level: 'A' | 'B' | 'C') => {}
-const randomF = () => {
-  teachersR.value.forEach((t) => {
-    t.levelA = []
-    t.levelC = []
-    t.levelB = []
+
+//
+const studentsA = allStudentsR.value.slice(0, totalA)
+const studentsB = allStudentsR.value.slice(totalA, allStudentsR.value.length - totalC)
+const studentsC = allStudentsR.value.slice(allStudentsR.value.length - totalC)
+
+const availableTeachers = [...teachersR.value]
+
+const assignStudents = (students: User[], level: 'A' | 'B' | 'C') => {
+  students.forEach((stu) => {
+    let notFull = true
+    while (notFull) {
+      if (availableTeachers.length === 0) {
+        availableTeachers.push(...teachersR.value)
+      }
+      const randIndex = Math.floor(Math.random() * availableTeachers.length)
+      const teacher = availableTeachers[randIndex]
+
+      availableTeachers.splice(randIndex, 1)
+
+      if (teacher[level]! > 0 && teacher[`level${level}`]?.length! < teacher[level]!) {
+        teacher[`level${level}`]?.push(stu)
+        notFull = false
+      }
+    }
   })
 }
+
+const randomF = () => {
+  teachersR.value.forEach((teach) => {
+    teach.levelA = []
+    teach.levelB = []
+    teach.levelC = []
+  })
+  assignStudents(studentsA, 'A')
+  assignStudents(studentsB, 'B')
+  assignStudents(studentsC, 'C')
+}
+
+// ----------------
+const submitF = async () => {
+  teachersR.value.forEach((teach) => {
+    teach.levelA?.forEach((stu) => {
+      studentsTR.push({
+        name: stu.name,
+        number: stu.number,
+        student: { teacherId: teach.id, teacherName: teach.name }
+      })
+    })
+    teach.levelB?.forEach((stu) => {
+      studentsTR.push({
+        name: stu.name,
+        number: stu.number,
+        student: { teacherId: teach.id, teacherName: teach.name }
+      })
+    })
+    teach.levelC?.forEach((stu) => {
+      studentsTR.push({
+        name: stu.name,
+        number: stu.number,
+        student: { teacherId: teach.id, teacherName: teach.name }
+      })
+    })
+  })
+  await TeacherService.updateStudentsTeachersService(studentsTR)
+  createNoticeBoard('学生分配提交成功', '')
+}
+//
+const exportStudents = () => {
+  TeacherService.listStudentsService().then((res) => {
+    if (!res) return
+    let i = 0
+    let result = res.value.map((s) => {
+      return {
+        序号: (i += 1),
+        学号: s.number,
+        学生姓名: s.name,
+        指导教师: s.student?.teacherName
+      }
+    })
+    import('@/services/ExcelUtils').then(({ exportExcelFile }) => exportExcelFile(result))
+  })
+}
+const disC = computed(() => teachersR.value[0].levelA?.length === teachersR.value[0].A)
 </script>
 <template>
-  <div>
-    <el-row class="my-row">
-      <el-col class="my-col" :span="2">
-        <el-button type="primary" @click="randomF">随机分配</el-button>
-      </el-col>
-      <el-col class="my-col" :span="2"><el-button type="success" :icon="Check"></el-button></el-col>
-      <el-col class="my-col" :span="2"><el-button type="primary">导出分配表格</el-button></el-col>
-    </el-row>
-    <el-row class="my-row">
-      <el-col class="my-col">
-        <template v-for="(t, index) of teachersR" :key="index">
-          {{ t.name }} / {{ t.total }}:
-          <br />
-        </template>
-      </el-col>
-    </el-row>
-  </div>
+  <el-row class="my-row">
+    <el-col class="my-col">提交分配，将清空分组/顺序/题目等信息。</el-col>
+    <el-col class="my-col" :span="6">
+      <el-button type="primary" @click="randomF">随机分配</el-button>
+      <el-button @click="submitF" type="success" :icon="Check" :disabled="!disC"></el-button>
+    </el-col>
+    <el-col class="my-col" :span="4">
+      <el-button type="primary" @click="exportStudents">导出分配表格</el-button>
+    </el-col>
+    <el-col class="my-col">
+      <template v-for="(t, index) of teachersR" :key="index">
+        {{ t.name }}/ {{ t.total }}:
+        <br />
+        LevelA:
+        <template v-for="(stu, index) of t.levelA" :key="index">{{ stu.name }};</template>
+        LevelB:
+        <template v-for="(stu, index) of t.levelB" :key="index">{{ stu.name }};</template>
+        LevelC:
+        <template v-for="(stu, index) of t.levelC" :key="index">{{ stu.name }};</template>
+        <br />
+      </template>
+      <br />
+    </el-col>
+  </el-row>
 </template>

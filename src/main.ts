@@ -21,6 +21,5 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.config.errorHandler = (err) => {
   console.log(err)
   const message = err as string
-
   createMessageDialog(message)
 }

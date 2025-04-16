@@ -104,6 +104,13 @@ export interface Progress {
   loaded: number
   title: string
 }
+
+export interface StudentDTO {
+  number?: string
+  groupNumber?: number
+  queueNumber?: number
+  projectTitle?: string
+}
 export interface ResultVO<T> {
   code: number
   message?: string

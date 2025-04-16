@@ -21,11 +21,36 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/main/header/UserSettingView.vue')
       },
       {
+        path: 'admin',
+        component: () => import('@/views/main/admin/IndexView.vue'),
+        meta: {
+          roles: [consty.ADMIN]
+        }
+      },
+      {
+        path: 'processfiles/:pid?',
+        component: () => import('@/views/main/teacher/functions/ListFilesView.vue'),
+        meta: {
+          roles: [consty.TEACHER]
+        }
+      },
+      {
         path: 'student',
         component: () => import('@/views/main/student/IndexView.vue'),
         meta: {
           roles: [consty.STUDENT]
-        }
+        },
+        children: [
+          {
+            path: '',
+            component: () => import('@/views/main/student/TutorView.vue')
+          },
+          {
+            props: true,
+            path: 'processes/:pid',
+            component: () => import('@/views/main/student/ProcessView.vue')
+          }
+        ]
       },
       {
         path: 'teacher',

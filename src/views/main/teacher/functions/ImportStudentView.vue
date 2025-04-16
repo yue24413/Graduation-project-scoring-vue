@@ -5,6 +5,10 @@ import type { User } from '@/types'
 import { ref } from 'vue'
 
 const allStudentsR = ref<User[]>([])
+/**
+ * input.files属性返回一个FileList对象。FileList中的每个元素（即每个被选中的文件）实际上是一个File对象。
+ *
+ */
 const filesChange = (event: Event) => {
   const element = event.target as HTMLInputElement
   if (!element || !element.files) {
