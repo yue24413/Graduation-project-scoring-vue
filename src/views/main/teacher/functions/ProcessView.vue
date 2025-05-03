@@ -1,33 +1,21 @@
 <script setup lang="ts">
 import { CommonService } from '@/services'
 import { processAuths } from '@/services/Const'
-import EditProcessVue from '@/views/main/teacher/functions/processes/OperationProcessVue.vue'
-import { watch } from 'vue'
-import AddProcessVue from './AddProcessVue.vue'
+import type { ProcessItem, StudentAttach } from '@/types'
+import { computed } from 'vue'
+import AddProcessVue from './processes/AddProcessVue.vue'
+import EditProcessVue from './processes/OperationProcessVue.vue'
 
 const processesS = await CommonService.listProcessesService()
-const authC = (authVal: string) => {
-  let role = ''
-  processAuths.find((ps) => {
-    role = ps.v == authVal ? ps.name : ''
-    if (role != '') {
-      return role
-    }
-  })
-  return role
-}
 
-///
-let totalScore = processesS.value.reduce((Score, current) => Score + (current.point || 0), 0)
-watch(
-  processesS,
-  () => (totalScore = processesS.value.reduce((Score, current) => Score + (current.point || 0), 0))
-)
+const authC = computed(() => (authVal: string) => processAuths.find((pa) => pa.v === authVal)?.name)
 </script>
 <template>
-  <el-row :gutter="10" style="margin-bottom: 10px">
-    <el-col><AddProcessVue :totalScore="totalScore" /></el-col>
-    <el-col>
+  <el-row class="my-row">
+    <el-col :span="24">
+      <AddProcessVue />
+    </el-col>
+    <el-col :span="24">
       <el-table :data="processesS">
         <el-table-column type="index" label="#" width="50" />
         <el-table-column width="150">
@@ -35,32 +23,33 @@ watch(
             {{ scope.row.name }}
           </template>
         </el-table-column>
-        <el-table-column width="100">
+        <el-table-column width="60">
           <template #default="scope">
             {{ authC(scope.row.auth) }}
           </template>
         </el-table-column>
-        <el-table-column width="100">
+        <el-table-column width="80">
           <template #default="scope">{{ scope.row.point }}%</template>
         </el-table-column>
-        <el-table-column width="130">
+        <el-table-column>
           <template #default="scope">
-            <template v-for="(i, index) of scope.row.items" :key="index">
-              {{ i.name }}-{{ i.point }}%
+            <template v-for="(item, index) of scope.row.items" :key="index">
+              <span>{{ (item as ProcessItem).name }} - {{ (item as ProcessItem).point }}%</span>
+              <br />
             </template>
           </template>
         </el-table-column>
-        <el-table-column width="80" />
-        <el-table-column width="150">
+        <el-table-column>
           <template #default="scope">
-            <template v-for="(i, index) of scope.row.studentAttach" :key="index">
-              {{ i.name }} -{{ i.ext }}
+            <template v-for="(item, index) of scope.row.studentAttach" :key="index">
+              <span>{{ (item as StudentAttach).name }} - {{ (item as StudentAttach).ext }}</span>
+              <br />
             </template>
           </template>
         </el-table-column>
-        <el-table-column width="150">
+        <el-table-column>
           <template #default="scope">
-            <EditProcessVue :process="scope.row" :totalScore="totalScore" />
+            <EditProcessVue :process="scope.row" />
           </template>
         </el-table-column>
       </el-table>

@@ -1,45 +1,30 @@
 <script setup lang="ts">
+import { createNoticeBoard } from '@/components/Notice'
+import { TeacherService } from '@/services/TeacherService'
 import type { Process } from '@/types'
+import { Delete, Edit } from '@element-plus/icons-vue'
+import { ElMessageBox } from 'element-plus'
 import { createEditProcessDialog } from '.'
 
-import { TeacherService } from '@/services/TeacherService'
-import { ElMessage, ElMessageBox } from 'element-plus'
-const prop = defineProps<{ process: Process; totalScore: number }>()
-const processItemR = prop.process
+const prop = defineProps<{ process: Process }>()
+
 const delPorcessF = (pid: string) => {
-  ElMessageBox.confirm(`删除${processItemR.name}将不可恢复，确定删除？`, 'Warning', {
-    confirmButtonText: 'OK',
-    cancelButtonText: 'Cancel',
-    type: 'warning'
+  ElMessageBox.confirm(
+    `删除<span style="color: red; font-weight: bold">${prop.process.name}</span>将不可恢复，确定删除？`,
+    'Warning',
+    {
+      confirmButtonText: 'OK',
+      cancelButtonText: 'Cancel',
+      type: 'warning',
+      dangerouslyUseHTMLString: true
+    }
+  ).then(async () => {
+    await TeacherService.delProcessService(pid)
+    createNoticeBoard('过程已删除', '')
   })
-    .then(async () => {
-      await TeacherService.delProcessService(pid)
-    })
-    .then(() => {
-      ElMessage({
-        type: 'success',
-        message: '删除成功'
-      })
-    })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: '取消删除'
-      })
-    })
 }
-console.log(prop.totalScore)
 </script>
 <template>
-  <div>
-    <el-button type="primary" @click="createEditProcessDialog(prop.process, prop.totalScore)">
-      <el-icon><EditPen /></el-icon>
-    </el-button>
-    <el-button
-      type="danger"
-      @click="delPorcessF(prop.process.id ?? '')"
-      :totalScore="prop.totalScore">
-      <el-icon><DeleteFilled /></el-icon>
-    </el-button>
-  </div>
+  <el-button type="primary" :icon="Edit" circle @click="createEditProcessDialog(prop.process)" />
+  <el-button type="danger" :icon="Delete" circle @click="delPorcessF(prop.process.id ?? '')" />
 </template>

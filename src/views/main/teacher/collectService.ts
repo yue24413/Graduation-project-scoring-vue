@@ -18,7 +18,7 @@ const levelCount = ref<LevelCount>({
   score_90: 0,
   len: 0
 })
-export const collectService = (pses: ProcessScore[], studentsS: Ref<User[]>) => {
+export const collectPS = (pses: ProcessScore[], studentsS: Ref<User[]>) => {
   const userStore = useUserStore()
   const userS = userStore.userS
   const collectPS = (pses: ProcessScore[]) => {

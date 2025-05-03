@@ -1,34 +1,3 @@
-<template>
-  <div class="container">
-    <div class="content">
-      <div class="login-card">
-        <form @submit.prevent="onLogin">
-          <h2 class="title">login</h2>
-
-          <label></label>
-          <input
-            type="text"
-            id="number"
-            v-model="userR.number"
-            required
-            placeholder="请输入学号/工号:" />
-          <label></label>
-          <input
-            placeholder="请输入密码："
-            type="password"
-            id="password"
-            v-model="userR.password"
-            required />
-          <button type="submit">Login</button>
-        </form>
-      </div>
-      <div class="stars-container" ref="starsContainer">
-        <div v-for="(star, index) in stars" :key="index" class="star" :style="star.style"></div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { CommonService } from '@/services/index'
 import { computed, onMounted, ref, watchEffect } from 'vue'
@@ -113,6 +82,36 @@ watchEffect(() => {
   }
 })
 </script>
+<template>
+  <div class="container">
+    <div class="content">
+      <div class="login-card">
+        <form @submit.prevent="onLogin">
+          <h2 class="title">login</h2>
+
+          <label></label>
+          <input
+            type="text"
+            id="number"
+            v-model="userR.number"
+            required
+            placeholder="请输入学号/工号:" />
+          <label></label>
+          <input
+            placeholder="请输入密码："
+            type="password"
+            id="password"
+            v-model="userR.password"
+            required />
+          <button type="submit">Login</button>
+        </form>
+      </div>
+      <div class="stars-container" ref="starsContainer">
+        <div v-for="(star, index) in stars" :key="index" class="star" :style="star.style"></div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .container {

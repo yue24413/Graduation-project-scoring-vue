@@ -1,67 +1,73 @@
+import { createMessageDialog } from '@/components/message/index'
 import type { ResultVO } from '@/types'
 import { createFetch } from '@vueuse/core'
 
 // 用于存储每个请求的缓存信息
 const cacheInfo = new Map<string, { etag: string | null; lastModified: string | null }>()
+// 递归实现反序列化为JS对象
+const parseObject = (data: any) => {
+  let newValue = data
 
-const useFetch = createFetch({
-  baseUrl: '/api/', // API 接口
+  for (const [key, value] of Object.entries(data)) {
+    if (value instanceof Array) {
+      value.forEach((d) => {
+        parseObject(d)
+      })
+    }
+    if (typeof value == 'object') {
+      parseObject(value)
+    }
+
+    if (typeof value == 'string' && (value.includes('{"') || value.includes('['))) {
+      try {
+        newValue = JSON.parse(value)
+        if (typeof newValue == 'object') {
+          data[key] = parseObject(newValue)
+        }
+      } catch (error) {
+        //
+      }
+    }
+  }
+  return newValue
+}
+export const useFetch = createFetch({
+  baseUrl: '/api',
   options: {
     beforeFetch: ({ options }) => {
+      //从sessionStorage中取值
       const token = sessionStorage.getItem('token')
-      // 避免token数据值为空
       if (token) {
         options.headers = {
           ...options.headers,
-          token: token
+          token: token,
+          'Content-Type': 'application/json'
         }
       }
       return { options }
     },
-
     afterFetch: (ctx) => {
-      // 从响应获取响应体对象
+      //如果是blob类型的数据，直接返回，因为下载文件不需要处理（后端是MediaType.APPLICATION_OCTET_STREAM）
+      if (ctx.response.headers.get('Content-Type')?.includes('application/octet-stream')) {
+        console.log('blob data')
+        return ctx
+      }
       const data: ResultVO<{}> = ctx.data
-      parseObjext(data)
-      // 全局处理后端返回的异常信息。即，业务状态码不是200
       if (data.code != 200) {
-        // 将传递给onFetchError
         return Promise.reject(data.message)
       }
+      // 调用 parseObject 函数对数据进行处理
+      parseObject(data)
       return ctx
     },
-    // 全局处理异常信息。http状态码不是200。
-    // 以及afterFetch拒绝后的处理
-    // 未捕获异常，传递给全局异常处理
     onFetchError: (ctx) => {
+      console.log('error:{}', ctx)
+      createMessageDialog(ctx.error)
       return Promise.reject(ctx.error)
     }
   }
 })
 
-//递归对ResultVO进行处理，化为JS对象
-const parseObjext = (data: any) => {
-  let newValue = data
-  for (const [key, value] of Object.entries(data)) {
-    if (Array.isArray(value)) {
-      value.forEach((d) => parseObjext(d))
-    }
-    if (typeof value == 'object') {
-      parseObjext(value)
-    }
-    if (typeof value == 'string' && (value.includes('{') || value.includes('[')))
-      try {
-        newValue = JSON.parse(value)
-        if (typeof newValue == 'object') {
-          data[key] = parseObjext(newValue)
-        }
-      } catch (error) {
-        //
-      }
-  }
-  return newValue
-}
-//
 // 默认execute()函数通过throwOnFailed属性阻止抛出异常
 // 欲支持全局异常处理，必须结合immediate/throwOnFailed
 export const useGet = async <T>(url: string) => {

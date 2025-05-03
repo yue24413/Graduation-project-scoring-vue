@@ -27,6 +27,7 @@ const usersStore = useUsersStore()
 
 export class TeacherService {
   // 获取指导学生
+
   @StoreCache(infosStore.tutortudentsS)
   static async listTutorStudentsService() {
     const data = await useGet<User[]>(`${TEACHER}/students/tutor`)
@@ -34,6 +35,7 @@ export class TeacherService {
   }
 
   //
+
   @StoreCache(infosStore.groupStudentsS)
   static async listGroupStudentsService() {
     const data = await useGet<User[]>(`${TEACHER}/students/group`)
@@ -41,6 +43,7 @@ export class TeacherService {
   }
 
   //
+
   @StoreCache(infosStore.groupTeachersS)
   static async listGroupTeachersService() {
     const data = await useGet<User[]>(`${TEACHER}/teachers/group`)
@@ -67,18 +70,23 @@ export class TeacherService {
   }
 
   //
+
   @StoreMapCache(processInfosStore.porcessFilesMapS)
   static async listPorcessFilesService(pid: string, auth: string) {
-    return await useGet<ProcessFile[]>(`${TEACHER}/processfiles/${pid}/types/${auth}`)
+    const data = await useGet<ProcessFile[]>(`${TEACHER}/processfiles/${pid}/types/${auth}`)
+    return data as unknown as ProcessFile[]
   }
 
   // 获取全部教师
   @StoreCache(usersStore.allTeachersS)
+  // @ELLoading()
   static async listTeachersService() {
     const data = await useGet<User[]>(`${TEACHER}/teachers`)
     return data as unknown as Ref<User[]>
   }
+
   @StoreCache(usersStore.allStudentsS)
+  @ELLoading()
   static async listStudentsService() {
     const data = await useGet<User[]>(`${TEACHER}/students`)
     return data as unknown as Ref<User[]>
@@ -92,8 +100,8 @@ export class TeacherService {
   }
 
   // 加载小组全部评分
-  @StoreCache(processInfosStore.groupProcessScoresS)
   @ELLoading()
+  @StoreCache(processInfosStore.groupProcessScoresS)
   static async listProcessScoresGroupService() {
     const data = await useGet<ProcessScore[]>(`${TEACHER}/processscores/groups`)
     return data as unknown as Ref<ProcessScore[]>
@@ -175,6 +183,7 @@ export class TeacherService {
   }
 
   //
+  @ELLoading()
   @StoreCache(processStore.processesS, true)
   static async updateProcessService(process: Process) {
     // @ts-ignore

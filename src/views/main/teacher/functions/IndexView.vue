@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, ref } from 'vue'
+import { computed, defineAsyncComponent, ref, type Component } from 'vue'
 
 const components: { name: string; component: Component }[] = [
   {

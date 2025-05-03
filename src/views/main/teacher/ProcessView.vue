@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { CommonService } from '@/services'
-import { collectService } from '@/services/collectService'
 import { PA_REVIEW } from '@/services/Const'
 import { TeacherService } from '@/services/TeacherService'
 import { useUserStore } from '@/stores/UserStore'
-import type { ProcessScore, Student, StudentProcessScore, User } from '@/types/index'
+import type { ProcessFile, ProcessScore, Student, StudentProcessScore, User } from '@/types/index'
+import { collectPS } from './collectService'
 
-import { defineAsyncComponent, ref } from 'vue'
+import { Box, Brush } from '@element-plus/icons-vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const userStore = useUserStore()
 const userS = userStore.userS
+const processFilesR = ref<ProcessFile[]>([])
+
 const params = useRoute().params as { pid: string; auth: string }
 
 const result = await Promise.all([
@@ -23,9 +26,11 @@ const result = await Promise.all([
 ])
 
 const studentsS = result[0]
+const processScores = result[1]
+processFilesR.value = result[2]
 const processesS = result[3]
 
-let collectS = collectService(result[1].value, studentsS)
+let collectS = collectPS(result[1].value, studentsS)
 let cPsS = collectS.currentPStudentsR
 let levelValue = collectS.levelCount
 /********************* */
@@ -41,11 +46,21 @@ const addProcessScoreF = async (ps: ProcessScore) => {
   const result = await TeacherService.addPorcessScoreService(params.pid, params.auth, ps)
   //新分数重新计算
   // collectPS(result.value)
-  collectS = collectService(result.value, studentsS)
+  collectS = collectPS(result.value, studentsS)
   cPsS = collectS.currentPStudentsR
   levelValue = collectS.levelCount
 }
+/**** */
+const currentProcessAttach = processesS.value.find((ps) => ps.id == params.pid)?.studentAttach
 
+const clickAttachF = async (sid: string, number: number) => {
+  const pname = processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)?.detail
+  pname && (await TeacherService.getProcessFileService(pname))
+}
+const processFileC = computed(
+  () => (sid: string, number: number) =>
+    processFilesR.value.find((pf) => pf.studentId == sid && pf.number == number)
+)
 const closeF = () => (gradingDialogVisable.value = false)
 </script>
 <template>
@@ -95,7 +110,7 @@ const closeF = () => (gradingDialogVisable.value = false)
           </el-table-column>
           <el-table-column label="附件">
             <template #defult="scope">
-              <!-- <template v-for="(attach, index) of currentProcessAttach" :key="index">
+              <template v-for="(attach, index) of currentProcessAttach" :key="index">
                 <el-button
                   :icon="attach.number == 1 ? Box : Brush"
                   :color="attach.number == 1 ? '#409EFF' : '#626aef'"
@@ -109,7 +124,7 @@ const closeF = () => (gradingDialogVisable.value = false)
                   {{ attach.name }}
                 </el-button>
                 <br />
-              </template> -->
+              </template>
             </template>
           </el-table-column>
           <el-table-column label="评分/平均分">

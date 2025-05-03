@@ -9,8 +9,8 @@ const props = defineProps<{ msg1: string; msg2: string }>()
 // const open = () => {
 ElNotification.success({
   title: props.msg1,
-  message: props.msg2,
-  offset: 100
+  message: props.msg2
+  // offset: 100
 })
 // }
 </script>

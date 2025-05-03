@@ -16,7 +16,6 @@ export class AdminService {
     })
     await usePost(`${ADMIN}/teachers/${depid}`, teachers)
   }
-
   @StoreCache(departmentStore.departmentsS)
   static async listDepartmentsService() {
     const data = await useGet(`${ADMIN}/departments`)

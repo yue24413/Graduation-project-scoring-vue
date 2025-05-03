@@ -59,12 +59,18 @@ watch(autoScore, () => {
   const psDetailTemp = [...psDetailR.value.detail]
   while (psDetailTemp.length > 1) {
     //Math.random() 生成一个介于 0 和 1 之间的随机浮点数 Math.floor 将浮点数向下取整
+    //弊端： 随机数有可能是负数，和项数有关，循环项数-1次，当随机数<循环项数-1次时， 并且每次都碰巧向上取整，则可能会溢出，最后一项会有负数的情况
     const randomIndex = Math.floor(Math.random() * psDetailTemp.length)
     const psDetail = psDetailTemp[randomIndex]
     const item = processItems.find((pi) => pi.number === psDetail.number)
+    console.log('item.number', item?.number)
+
     const result = score * 0.01 * (item?.point ?? 0)
+    console.log('result:', result)
 
     const randomScore = Math.random() > 0.5 ? Math.ceil(result) : Math.floor(result)
+    console.log('randomScore:', randomScore)
+
     psDetail.score = randomScore
     psDetailTemp.splice(randomIndex, 1)
     temp += randomScore

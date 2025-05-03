@@ -31,13 +31,13 @@ export const uploadFileService = async (
     data: fdata,
     headers: { xtoken: encoder }
   })
-  return resp
+  return resp.data.value?.data as unknown as ProcessFile[]
 }
 
 //
 export const listProcessFilesService = async (pid: string) => {
   const data = await useGet<ProcessFile[]>(`${STUDENT}/processfiles/${pid}`)
-  return data
+  return data as unknown as ProcessFile[]
 }
 
 // 摘要

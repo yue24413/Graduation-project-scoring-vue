@@ -1,8 +1,7 @@
 import { CommonService } from '@/services'
 import * as consty from '@/services/Const'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-// createWebHashHistory
-// createWebHistory
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/login',
@@ -97,7 +96,7 @@ const router = createRouter({
   routes: routes
 })
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
   const roles = to.meta.roles
 
   // 如果路由没有定义权限，则直接放行

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LoadingVue from '@/components/loading/LoadingVue.vue'
+import LoadingVue from '@/components/LoadingVue.vue'
 </script>
 <template>
   <suspense>

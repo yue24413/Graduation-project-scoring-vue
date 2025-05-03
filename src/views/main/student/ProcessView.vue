@@ -77,6 +77,8 @@ const uploadF = async () => {
   const fdata = new FormData()
   fdata.append('pname', selectAttachR.value?.name ?? '')
   fdata.append('file', fileR.value, fileName)
+  console.log(fdata)
+
   const sign = await uploadFileSignatureService(
     `${params.pid}${selectAttachR.value?.name}${fileName}${selectAttachR.value?.number!}`
   )

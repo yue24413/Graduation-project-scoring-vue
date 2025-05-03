@@ -4,7 +4,7 @@ import router from '@/router'
 import { CommonService } from '@/services'
 import { ADMIN, STUDENT, TEACHER } from '@/services/Const'
 import { useUserStore } from '@/stores/UserStore'
-import { InfoFilled } from '@element-plus/icons-vue'
+import { InfoFilled, Tools, User } from '@element-plus/icons-vue'
 import { defineAsyncComponent, type Component } from 'vue'
 const userS = useUserStore().userS.value
 const role = CommonService.getRole()
@@ -35,7 +35,7 @@ const logoutF = () => {
       <el-popconfirm width="220" :icon="InfoFilled" icon-color="#626AEF" title="确定退出登录吗?">
         <template #reference>
           <el-button link class="my-button logout">
-            <el-icon><User /></el-icon>
+            <el-icon class=""><User /></el-icon>
           </el-button>
         </template>
         <template #actions="{ cancel }">
