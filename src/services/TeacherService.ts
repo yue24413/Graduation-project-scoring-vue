@@ -74,7 +74,7 @@ export class TeacherService {
   @StoreMapCache(processInfosStore.porcessFilesMapS)
   static async listPorcessFilesService(pid: string, auth: string) {
     const data = await useGet<ProcessFile[]>(`${TEACHER}/processfiles/${pid}/types/${auth}`)
-    return data as unknown as ProcessFile[]
+    return data as unknown as Ref<ProcessFile[]>
   }
 
   // 获取全部教师

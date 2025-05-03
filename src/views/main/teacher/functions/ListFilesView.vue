@@ -31,9 +31,8 @@ watch(
     const selectProcess = processesS.find((p) => p.id == route.params?.pid)
     if (!selectProcess) return
     studentAttachsR.value = selectProcess.studentAttach!
-    processFilesR.value = await TeacherService.listPorcessFilesService(
-      selectProcess?.id!,
-      selectProcess?.auth!
+    await TeacherService.listPorcessFilesService(selectProcess?.id!, selectProcess?.auth!).then(
+      (res) => (processFilesR.value = res.value)
     )
   },
   { immediate: true }
