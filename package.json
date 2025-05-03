@@ -16,6 +16,7 @@
     "@element-plus/icons-vue": "^2.1.0",
     "@vueuse/core": "^13.1.0",
     "element-plus": "^2.9.9",
+    "vite-plugin-compression": "^0.5.1",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz"

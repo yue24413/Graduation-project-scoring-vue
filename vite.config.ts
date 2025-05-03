@@ -6,6 +6,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
+import viteCompression from 'vite-plugin-compression'
 // 引入 vite-plugin-cdn-import 插件
 // import { Plugin as importToCDN } from 'vite-plugin-cdn-import'
 // https://vitejs.dev/config/
@@ -32,6 +33,13 @@ export default defineConfig({
     Components({
       resolvers: [ElementPlusResolver()]
     }),
+    viteCompression({
+      verbose: true,
+      disable: false,
+      threshold: 10240,
+      algorithm: 'gzip',
+      ext: '.gz'
+    })
     /*
     参数含义如下：
     ViteCompression 插件用于压缩构建后的文件，减少文件体积，提高加载速度。
@@ -41,17 +49,18 @@ export default defineConfig({
     algorithm：指定压缩算法，这里设为gzip，是最常用的压缩算法之一。
     ext：指定压缩后文件的扩展名，这里设为.gz，这样压缩后的文件会以原文件名加上.gz的形式存在。
 
-nginx里面：
-  gzip_static on;开启静态压缩
-  gzip_http_version 1.1;设置在 HTTP/1.1 协议下启用 Gzip 压缩，确保只有符合 HTTP/1.1 协议的请求才会被考虑进行 Gzip 压缩
-  proxy_http_version 1.1;用于指定在转发请求时使用的 HTTP 协议版本
+  nginx里面：
+    gzip_static on;开启静态压缩
+    gzip_http_version 1.1;设置在 HTTP/1.1 协议下启用 Gzip 压缩，确保只有符合 HTTP/1.1 协议的请求才会被考虑进行 Gzip 压缩
+    proxy_http_version 1.1;用于指定在转发请求时使用的 HTTP 协议版本
     */
     visualizer({
       //Rendered：指的是打包后的资源在未经过任何压缩处理时的原始大小。
       open: true, // 打包完成后自动打开浏览器展示报告
       gzipSize: true, // 显示 gzip 压缩后的大小
       brotliSize: true // 显示 brotli 压缩后的大小
-    })
+    }),
+    
   ],
   resolve: {
     alias: {
