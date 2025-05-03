@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
-
+// import { compression } from 'vite-plugin-compression2'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -39,7 +39,7 @@ export default defineConfig({
       threshold: 10240,
       algorithm: 'gzip',
       ext: '.gz'
-    })
+    }),
     /*
     参数含义如下：
     ViteCompression 插件用于压缩构建后的文件，减少文件体积，提高加载速度。
@@ -59,8 +59,8 @@ export default defineConfig({
       open: true, // 打包完成后自动打开浏览器展示报告
       gzipSize: true, // 显示 gzip 压缩后的大小
       brotliSize: true // 显示 brotli 压缩后的大小
-    }),
-    
+    })
+    // compression(),
   ],
   resolve: {
     alias: {
